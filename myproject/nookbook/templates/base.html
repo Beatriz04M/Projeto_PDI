@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NookBook{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="icon" href="{% static 'imagens/favicon.png' %}" type="image/png">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header>
+        {% include 'menu.html' %}
+    </header>
+    
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+</body>
+</html>

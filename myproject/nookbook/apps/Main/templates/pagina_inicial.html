@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NookBook</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #fefce8;
+  color: #333;
+  overflow-x: hidden;
+}
+
+.toggle-btn {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1100;
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .toggle-btn {
+    display: block;
+  }
+
+  #main-content {
+    margin-left: 0; /* Remover a margem à esquerda quando a sidebar está oculta */
+    padding: 20px;
+  }
+}
+
+.container {
+  display: flex;
+}
+
+.sidebar {
+  width: 200px;
+  background-color: #ffe4e1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  transition: transform 0.3s ease;
+}
+
+.sidebar .top {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar .logo img {
+  max-height: 100px; /* Usando max-height para flexibilidade */
+  width: auto;
+}
+
+.nav {
+  flex-grow: 1;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  text-decoration: none;
+  color: #000;
+  border-radius: 12px;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.nav-item i {
+  margin-right: 10px;
+}
+
+.nav-item:not(.active):hover {
+  background-color: #f9b4c6;
+  border-radius: 12px;
+  margin: 0 10px;
+}
+
+.bottom-profile {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  border-top: 1px solid #f1c5c5;
+}
+
+.bottom-profile img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+#main-content {
+  margin-left: 200px;
+  padding: 30px;
+  flex: 1;
+  width: 100%;
+  overflow-x: auto; /* Permite rolar horizontalmente caso haja overflow */
+}
+
+.search-bar {
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+}
+
+@media (max-width: 700px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+  }
+
+  #main-content {
+    margin-left: 0; /* Garantir que o conteúdo principal ocupe toda a largura disponível */
+    padding: 20px;
+  }
+}
+
+.books-section .current-book {
+  padding: 24px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: flex-start;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.current-book img {
+  width: 120px;
+  max-width: 30vw;
+  height: auto;
+  border-radius: 10px;
+}
+
+.book-info .progress {
+  margin-top: 10px;
+}
+
+.progress-container {
+  width: 100%;
+  background-color: #eee;
+  border-radius: 5px;
+  height: 8px;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #a0e3af;
+  width: 84%;
+}
+
+.tracker {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  max-width: 220px;
+  flex-grow: 1;
+  margin-left: auto; /* Garante alinhamento à direita */
+  width: 100%;
+  overflow-x: auto; /* Permite rolagem horizontal */
+}
+
+.weekly-tracker {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 10px;
+  gap: 5px;
+}
+
+.weekly-tracker span {
+  width: 26px;
+  height: 26px;
+  background-color: #eee;
+  border-radius: 50%;
+  font-size: 0.85em;
+  line-height: 26px;
+  text-align: center;
+  font-weight: bold;
+  color: #555;
+  transition: background 0.3s, color 0.3s;
+}
+
+.weekly-tracker span.active {
+  background-color: #ffc86c;
+  color: #000;
+  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+
+.input-area {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.input-area label {
+  font-weight: bold;
+  font-size: 0.9em;
+  margin-bottom: 2px;
+}
+
+.input-area input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  width: 100%;
+}
+
+.input-area button {
+  background-color: #ffdca9;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.input-area button:hover {
+  background-color: #ffc86c;
+}
+
+.input-area #feedback {
+  font-size: 0.85em;
+  margin-top: 4px;
+}
+
+.recommended-section {
+  padding: 20px 0;
+}
+
+.section-title {
+  font-size: 24px;
+  margin-bottom: 16px;
+  font-weight: bold;
+}
+
+.carousel-container {
+  overflow-x: hidden;
+}
+
+.scrollable {
+  display: flex;
+  gap: 16px;
+  padding-bottom: 8px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  cursor: grab;
+}
+
+.scrollable:active {
+  cursor: grabbing;
+}
+
+.scrollable::-webkit-scrollbar {
+  display: none;
+}
+
+.book-carousel {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  padding: 16px;
+  scroll-snap-type: x mandatory;
+}
+
+.book-card {
+  flex: 0 0 auto;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  width: 160px;
+  scroll-snap-align: start;
+  text-align: center;
+  font-family: sans-serif;
+}
+
+.book-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  max-height: 200px;
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+
+.stars {
+  font-size: 16px;
+  color: #333;
+}
+
+@media (max-width: 900px) {
+  .books-section .current-book {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tracker {
+    align-items: flex-start;
+    max-width: 100%;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .input-area input,
+  .input-area button {
+    width: 100%;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+  <div class="container">
+    <aside id="sidebar" class="sidebar">
+      <div class="top">
+        <div class="logo">
+          <img src="logo.png" alt="Logo" />
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="#" class="nav-item active"><i class="bi bi-house"></i> Home</a>
+        <a href="#" class="nav-item"><i class="bi bi-person"></i> Perfil</a>
+        <a href="#" class="nav-item"><i class="bi bi-book"></i> Biblioteca</a>
+        <a href="#" class="nav-item"><i class="bi bi-plus-circle"></i> Adicionar Livro</a>
+        <a href="#" class="nav-item"><i class="bi bi-controller"></i> Desafios</a>
+        <a href="#" class="nav-item"><i class="bi bi-people"></i> Social</a>
+      </nav>
+      <div class="bottom-profile">
+        <img src="profile_picture.png" alt="Perfil" />
+        <div class="profile-info">
+          <strong>Olá,</strong><br />
+          <span>MaryLangue</span>
+        </div>
+      </div>
+    </aside>
+
+    <main id="main-content">
+      <div class="search-bar">
+        <input type="text" placeholder="Pesquisar..." />
+      </div>
+
+      <section class="books-section">
+        <h2>Os meus livros</h2>
+        <div class="current-book">
+          <img src="https://img.wook.pt/images/o-regresso-ao-grande-armazem-dos-sonhos-miye-lee/MXwzMTIxOTg2M3wyNzY5NjczM3wxNzQyMjI1NDU2MDAwfHdlYnA=/550x" alt="Livro Atual" />
+          <div class="book-info">
+            <h3>Normal People</h3>
+            <p>Sally Rooney</p>
+            <div class="progress">
+            <div class="progress-container">
+                <div class="progress-bar" style="width: {{ progresso.percentagem_lida }}%;"></div>
+            </div>
+            <span>{{ progresso.pag_atual }} de {{ progresso.livro.num_pag }} páginas – {{ progresso.percentagem_lida }}%</span>
+
+            {% if progresso.esta_lido %}
+                <p><strong>✅ Livro concluído!</strong></p>
+            {% else %}
+                <p><strong>📖 Em leitura</strong></p>
+            {% endif %}
+            </div>
+          <div class="tracker">
+            <div class="weekly-tracker">
+              <span data-day="0">D</span>
+              <span data-day="1">S</span>
+              <span data-day="2">T</span>
+              <span data-day="3">Q</span>
+              <span data-day="4">Q</span>
+              <span data-day="5">S</span>
+              <span data-day="6">S</span>
+            </div>
+            <div class="input-area">
+              <label for="pages-read">Leu hoje?</label>
+              <input type="number" id="pages-read" placeholder="Ex: 15" min="1" />
+              <button onclick="registerReading()">Registrar</button>
+              <p id="feedback"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="recommended">
+        <h2>Recomendados</h2>
+        <div class="carousel-container">
+          <div id="recommended-carousel" class="book-carousel scrollable">
+            <!-- Book cards -->
+            <div class="book-card">
+              <img src="https://img.wook.pt/images/o-regresso-ao-grande-armazem-dos-sonhos-miye-lee/MXwzMTIxOTg2M3wyNzY5NjczM3wxNzQyMjI1NDU2MDAwfHdlYnA=/550x" alt="Book" />
+              <p>★★★★☆</p>
+            </div>
+            <!-- Repeat for as many books as you want -->
+            <div class="book-card">
+                <img src="https://img.wook.pt/images/todos-os-tons-de-blu-marie-france-leger/MXwzMDUxNzk2NXwyNzAyMTM1M3wxNzI4OTAwMDM1MDAwfHdlYnA=/550x" alt="Book" />
+                <div class="stars">★ ★ ★ ★ ☆</div>
+              </div>
+              <div class="book-card">
+                <img src="https://img.wook.pt/images/raparigas-selvagens-rory-power/MXwzMDIzNzA3N3wyNjcyNjM5MnwxNzIyMzU3NzA5MDAwfHdlYnA=/550x" alt="Book" />
+                <div class="stars">★ ★ ★ ★ ☆</div>
+              </div>
+              <div class="book-card">
+                <img src="https://img.wook.pt/images/saving-6-chloe-walsh/MXwzMTQwMTQ2N3wyODE3MzU3NnwxNzQxMzQyMTg4MDAwfHdlYnA=/550x" alt="Book" />
+                <div class="stars">★ ★ ★ ★ ☆</div>
+              </div>
+              <div class="book-card">
+                <img src="https://img.wook.pt/images/binding-13-chloe-walsh/MXwyOTg2NDE0MHwyODE2NTA1N3wxNzQxNjAzMTU3MDAwfHdlYnA=/550x" alt="Book" />
+                <div class="stars">★ ★ ★ ★ ☆</div>
+              </div>
+              <div class="book-card">
+                <img src="https://img.wook.pt/images/coracoes-acelerados-marina-adair/MXwzMTg2OTk0N3wyODM0NDY5NHwxNzQ0MjAzNjMzMDAwfHdlYnA=/550x" alt="Book" />
+                <div class="stars">★ ★ ★ ★ ☆</div>
+              </div>
+              <div class="book-card">
+                <img src="https://img.wook.pt/images/apartamento-em-crise-bruno-leao/MXwzMTg5MDcwNXwyODM2MTY5MnwxNzQ0NzMzMjMyMDAwfHdlYnA=/550x" alt="Book" />
+                <div class="stars">★ ★ ★ ★ ☆</div>
+              </div>
+              <div class="book-card">
+                <img src="https://img.wook.pt/images/os-homens-do-rei-nora-sakavic/MXwzMTg0NTMxOXwyODMyNTMxMHwxNzQzNTc5Njc0MDAwfHdlYnA=/550x" alt="Book" />
+                <div class="stars">★ ★ ★ ★ ☆</div>
+              </div>
+              <div class="book-card">
+                <img src="https://img.wook.pt/images/bad-girl-reputation-elle-kennedy/MXwyNDQ4NjI0M3wyMDU3ODgzNnwxNzEwODMyODY2MDAwfHdlYnA=/290x" alt="Book" />
+                <div class="stars">★ ★ ★ ★ ☆</div>
+              </div>
+              <div class="book-card">
+                <img src="https://img.wook.pt/images/phantasma-kaylie-smith/MXwzMDQ2NDUxOXwyNjk2Mzc3NnwxNzQ2NDY2NDQ4MDAwfHdlYnA=/550x" alt="Book" />
+                <div class="stars">★ ★ ★ ★ ☆</div>
+              </div>
+              <div class="book-card">
+                <img src="https://img.wook.pt/images/o-meu-nome-e-emilia-del-valle-isabel-allende/MXwzMTc0MTI1N3wyODIzNzkzN3wxNzQ0NjE4NTM3MDAwfHdlYnA=/550x" alt="Book" />
+                <div class="stars">★ ★ ★ ★ ☆</div>
+              </div>
+              
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('show');
+    }
+
+    let readingData = { labels: [], data: [] };
+
+    function registerReading() {
+      const pages = parseInt(document.getElementById('pages-read').value);
+      const feedback = document.getElementById('feedback');
+      const today = new Date();
+      const dayStr = today.toLocaleDateString('pt-BR');
+      const weekday = today.getDay();
+
+      if (pages > 0) {
+        feedback.textContent = '🎉 Você adicionou ${pages} página(s) hoje!';
+        feedback.style.color = 'green';
+        document.getElementById('pages-read').value = '';
+
+        const index = readingData.labels.indexOf(dayStr);
+        if (index !== -1) {
+          readingData.data[index] += pages;
+        } else {
+          readingData.labels.push(dayStr);
+          readingData.data.push(pages);
+        }
+
+        document.querySelectorAll('.weekly-tracker span').forEach(span => {
+          span.classList.remove('active');
+        });
+        document.querySelector(`.weekly-tracker span[data-day="${weekday}"]`).classList.add('active');
+
+        saveReadingData();
+        updateChart();
+      } else {
+        feedback.textContent = 'Por favor, insira um número válido.';
+        feedback.style.color = 'red';
+      }
+    }
+
+    function saveReadingData() {
+      localStorage.setItem('readingData', JSON.stringify(readingData));
+    }
+
+    function loadReadingData() {
+      const saved = localStorage.getItem('readingData');
+      if (saved) {
+        readingData = JSON.parse(saved);
+      }
+    }
+
+    function updateChart() {
+      // Placeholder for chart logic
+    }
+
+    window.onload = loadReadingData;
+
+    const carousel = document.getElementById('recommended-carousel');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    carousel.addEventListener('mousedown', (e) => {
+      isDown = true;
+      carousel.classList.add('active');
+      startX = e.pageX - carousel.offsetLeft;
+      scrollLeft = carousel.scrollLeft;
+    });
+
+    carousel.addEventListener('mouseleave', () => {
+      isDown = false;
+      carousel.classList.remove('active');
+    });
+
+    carousel.addEventListener('mouseup', () => {
+      isDown = false;
+      carousel.classList.remove('active');
+    });
+
+    carousel.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - carousel.offsetLeft;
+      const walk = (x - startX) * 2;
+      carousel.scrollLeft = scrollLeft - walk;
+    });
+  </script>
+</body>
+</html>

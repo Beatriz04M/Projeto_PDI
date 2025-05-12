@@ -1,0 +1,100 @@
+.linha-topo {
+    display: flex;
+    align-items: center;
+    gap: 200px;
+    margin: 10px 0px 20px 40px;
+    flex-wrap: wrap; /* para responsividade */
+    text-align: center;
+  }
+  
+  
+  .barra-pesquisa-estilizada {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .livros-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 3rem;
+  }
+  
+  .livro-card {
+    background-color: #fff3d4;
+    border-radius: 20px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .livro-card img {
+    width: 120px;
+    height: 170px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    align-self: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .livro-titulo {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 0.3rem;
+    line-height: 1.3;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 100%;
+  }  
+  
+  .livro-autor {
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 0.6rem;
+    font-size: 0.95rem;
+  }
+  
+  .livro-desc {
+    font-size: 0.95rem;
+    color: #444;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+    height: 4.2em; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }  
+  
+  
+  .livro-nota {
+    background-color: #fce98f;
+    color: #222;
+    font-weight: bold;
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  
+  .sem-resultados {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-top: 4rem;
+    color: #555;
+  }
+  
+  .livro-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  
+  .livro-link:hover .livro-card {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+  }

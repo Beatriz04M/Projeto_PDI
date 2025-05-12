@@ -1,0 +1,259 @@
+.bottom-profile {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    border-top: 1px solid #f1c5c5;
+  }
+  
+  .bottom-profile img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  
+  #main-content {
+    margin-left: 200px;
+    padding: 30px;
+    flex: 1;
+    width: 100%;
+  }
+  
+  
+  @media (max-width: 700px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+  
+    .sidebar.show {
+        transform: translateX(0);
+    }
+  
+    #main-content {
+        margin-left: 30px;
+        padding: 20px;
+    }
+  }
+  
+  .form-section {
+    display: flex;
+    gap: 20px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    flex-wrap: wrap;
+  }
+  
+  .cover-upload {
+    max-width: 300px;
+    aspect-ratio: 2 / 3;
+    width: 100%;
+    background-color: #ffffff;
+    border: 2px dashed #ccc;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .placeholder {
+    font-size: 32px;
+    color: #aaa;
+  }
+  
+  .form-fields {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 250px;
+    margin-right: 20px;
+    padding-bottom: 30px;
+  }
+  
+  .form-fields input,
+  .form-fields select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 100%;
+    height: 44px; /* Consistente com outros campos de entrada */
+    line-height: 1.4; /* Ajuste para garantir alinhamento vertical */
+  }
+  
+  .form-fields textarea{
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 100%;
+  }
+  
+  .inline-inputs {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .form-fields button {
+    background-color: #fcb6c4;
+    border: none;
+    padding: 10px;
+    color: #000000;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  @media (max-width: 700px) {
+    .form-section {
+        flex-direction: column;
+        align-items: center;
+    }
+  
+    .cover-upload {
+        width: calc(100% - 40px); /* ocupa quase tudo, com margens laterais */
+        max-width: 300px;
+        height: auto;
+        aspect-ratio: 2 / 3;
+        margin: 0 auto 20px auto; /* margem inferior para separar dos inputs */
+    }
+  
+    .form-fields {
+        width: 100%;
+    }
+  }
+  
+  /* Adicionar estilo para o input de tags */
+  .tag-input-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 5px; /* Reduzindo o padding para diminuir a margem */
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: white;
+    width: 100%;
+    min-height: 40px; /* Diminuir a altura para ficar mais compacto */
+    position: relative;
+    align-items: center;
+  }
+  
+  .tag-input-wrapper input {
+    border: none;
+    outline: none;
+    flex: 1;
+    min-width: 120px;
+    font-size: 14px;
+    height: 30px; /* Reduzir altura para ser compatível com outros campos */
+    padding: 0 5px; /* Diminui o padding para compactar */
+  }
+  
+  .tag {
+    background-color: #fcb6c4;
+    color: white;
+    padding: 4px 8px; /* Reduzindo o padding para ficar mais compacto */
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px; /* Ajuste da fonte para ser mais discreta */
+    height: 24px; /* Altura das tags reduzida */
+  }
+  
+  .tag .remove-tag {
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  /* Ajuste de grupo de tags */
+  .tag-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    width: 100%;
+    min-height: 40px; /* Diminuir altura para ficar mais compacto */
+  }
+  
+  #erro-isbn {
+    color: red;
+    font-size: 0.9em;
+    display: none;
+  }
+  
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 10;
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  
+  .suggestion-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .suggestion-item:hover {
+    background-color: #fcb6c4;
+    color: white;
+  }
+  
+  .placeholder {
+    cursor: pointer;
+  }
+  
+  .mensagens {
+    list-style: none;
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+  
+  .mensagens li {
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+  
+  .mensagens li.success {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  .mensagens li.error {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+  
+  .preview-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+  
+  #preview-capa {
+    max-width: 200px;
+    cursor: pointer;
+  }
+  
+  .remove-capa {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: #cc0000;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+  

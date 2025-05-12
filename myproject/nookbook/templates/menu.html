@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>NookBook</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        
+    </style>
+</head>
+<body>
+<button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+<div class="container">
+    <aside id="sidebar" class="sidebar">
+        <div class="top">
+          <div class="logo">
+            <img src="{% static 'imagens/logo.png' %}" alt="Logo">
+          </div>
+        </div>
+      
+        <nav class="nav">
+          <a href="{% if user.is_authenticated %}{% url 'pagina_inicial' %}{% else %}{% url 'pagina_login' %}{% endif %}" class="nav-item {% if request.resolver_match.url_name == 'pagina_inicial' %}active{% endif %}">
+            <i class="bi bi-house"></i> Home
+          </a>
+          <a href="{% if user.is_authenticated %}{% url 'pagina_inicial' %}{% else %}{% url 'pagina_login' %}{% endif %}" class="nav-item {% if request.resolver_match.url_name == 'perfil' %}active{% endif %}">
+            <i class="bi bi-person"></i> Perfil
+          </a>
+          <a href="{% if user.is_authenticated %}{% url 'pagina_biblioteca' %}{% else %}{% url 'pagina_login' %}{% endif %}" class="nav-item {% if request.resolver_match.url_name == 'pagina_biblioteca' %}active{% endif %}">
+                   <i class="bi bi-book"></i> Biblioteca
+          </a>
+          <a href="{% if user.is_authenticated %}{% url 'adicionar_livro' %}{% else %}{% url 'pagina_login' %}{% endif %}" class="nav-item {% if request.resolver_match.url_name == 'adicionar_livro' %}active{% endif %}">
+            <i class="bi bi-plus-circle"></i> Adicionar Livro
+          </a>
+          <a href="{% if user.is_authenticated %}{% url 'pagina_inicial' %}{% else %}{% url 'pagina_login' %}{% endif %}" class="nav-item {% if request.resolver_match.url_name == 'desafios' %}active{% endif %}">
+            <i class="bi bi-controller"></i> Desafios
+          </a>
+        </nav>
+      
+        <div class="bottom-profile">
+          {% if user.is_authenticated and user.foto_perfil %}
+            <img src="{{ user.foto_perfil.url }}" alt="Perfil">
+          {% else %}
+            <img src="{% static 'imagens/profile_picture.png' %}" alt="Perfil">
+          {% endif %}
+          <div class="profile-info">
+            <strong>Olá,</strong><br>
+            <span>{% if user.is_authenticated %}{{ user.username }}{% else %}Visitante{% endif %}</span>
+          </div>
+        </div>
+      </aside>
+          
+
+    <main id="main-content">
+        <div class="topo-detalhes-pesquisa">
+          <form action="{% url 'pesquisar_livros' %}" method="get" class="barra-pesquisa-estilizada">
+            <input type="text" name="q" placeholder="Pesquisar livros..." required>
+            <button type="submit">🔍</button>
+          </form>
+        </div>
+        {% block content %}
+        {% endblock %}
+    </main>
+</div>
+
+<script>
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('show');
+}
+</script>
+</body>
+</html>

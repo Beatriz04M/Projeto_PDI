@@ -1,0 +1,415 @@
+.topo-detalhes-pesquisa {
+    display: flex;
+    gap: 4rem;  /* mais espaço entre botão e barra */
+    flex-wrap: wrap;
+    margin-left: -235px;
+  }
+  
+  .btn-voltar-nook {
+    background-color: #ff95ac;
+    color: white;
+    padding: 0.6rem 1.5rem;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 1rem;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-voltar-nook:hover {
+    background-color: #ff7593;
+  }
+  
+  .barra-pesquisa-estilizada {
+    display: flex;
+    background-color: #f3f1e2;
+    border-radius: 999px;
+    padding: 0.4rem 0.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+    min-width: 280px;
+  }
+  
+  .barra-pesquisa-estilizada input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0.6rem;
+    font-size: 1rem;
+    outline: none;
+    color: #333;
+  }
+  
+  .barra-pesquisa-estilizada button {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #555;
+    padding-left: 0.5rem;
+  }
+  
+  .detalhes-livro-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    background-color: #fffce8;
+    color: #1e1e1e;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .livro-topo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3rem;
+  }
+  
+  .capa-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  .capa-detalhe {
+    width: 250px;
+    border-radius: 16px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    object-fit: cover;
+  }
+  
+  .btn-adicionar-livro {
+    margin-top: 2rem;
+    background-color: #ff95ac;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 1rem;
+    text-decoration: none; 
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    display: inline-block;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-adicionar-livro:hover {
+    background-color: #ff7593;
+  }
+  
+  
+  .livro-info {
+    flex: 1;
+    min-width: 280px;
+  }
+  
+  .titulo-avaliacao {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.2rem;
+  }
+  
+  .titulo-avaliacao h1 {
+    font-size: 2rem;
+    margin: 0;
+  }
+  
+  
+  .avaliacao-nota {
+    font-weight: bold;
+    margin-top: 0.5rem;
+    color: #555;
+  }
+  
+  .autor {
+    font-weight: 500;
+    color: #444;
+    margin-bottom: 1.2rem;
+  }
+  
+  .descricao {
+    line-height: 1.6;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    white-space: pre-line;
+  }
+  
+  .tags-livro {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2rem;
+  }
+  
+  .tag {
+    background-color: #eadcb9;
+    color: #333;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .avaliacoes-section {
+    background-color: #fcf6dc;
+    padding: 3rem 5rem 3rem 3rem;
+    border-radius: 16px;
+    margin-top: 4rem;
+    margin-right: 3rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+  
+  .avaliacoes-section h2 {
+    margin-top: 0;
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    text-align: left;
+    color: #333;
+  }
+  
+  .adicionar-comentario input[type="number"] {
+    width: 100%;
+    max-width: 200px;
+    padding: 8px;
+    font-size: 14px;
+  }
+  
+  .comentario {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  
+  .comentario-topo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .comentario-topo img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+  }
+  
+  .comentario-topo strong {
+    font-size: 1rem;
+  }
+  
+  .comentario-topo .data {
+    font-size: 0.85rem;
+    color: #777;
+  }
+  
+  .btn-seguir {
+    margin-left: auto;
+    background-color: #d9f3c6;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: background-color 0.3s;
+  }
+  
+  .btn-seguir:hover {
+    background-color: #bde8a8;
+  }
+  
+  .texto {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #333;
+  }
+  
+  .adicionar-comentario {
+    padding: 2rem;
+    background-color: #fff9db;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  
+  .adicionar-comentario h3 {
+    margin-bottom: 1rem;
+  }
+  
+  .adicionar-comentario textarea,
+  .adicionar-comentario select {
+    width: 100%;
+    margin-bottom: 1rem;
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  
+  .btn-comentar {
+    background-color: #ff95ac;
+    color: white;
+    padding: 0.7rem 2rem;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .btn-comentar:hover {
+    background-color: #ff7593;
+  }
+  
+  .mensagens {
+    margin: 2rem 0;
+  }
+  
+  .alerta {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .alerta.success {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  .alerta.error {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+
+  .tag {
+    display: inline-block;
+    background-color: #e0e0e0;
+    color: #333;
+    border-radius: 12px;
+    padding: 5px 10px;
+    margin: 3px;
+    font-size: 14px;
+    position: relative;
+  }
+  
+  .remove-tag {
+    margin-left: 8px;
+    cursor: pointer;
+    color: #900;
+  }
+  
+  .suggestion-item {
+    padding: 6px 12px;
+    background-color: white;
+    cursor: pointer;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .suggestion-item:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .mensagens {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+  }
+  
+  .alerta {
+    background-color: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    transition: opacity 0.5s ease-out;
+  }
+  
+  .dropdown-adicionar {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+  }
+  
+  .btn-adicionar-livro {
+    background-color: #ee8aac;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .btn-adicionar-livro:hover {
+    background-color: #d66d8a;
+  }
+  
+  .seta {
+    margin-left: 5px;
+    font-weight: normal;
+  }
+  
+  .dropdown-conteudo {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 999;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    min-width: 250px;
+    padding: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dropdown-conteudo form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  
+  .dropdown-conteudo label {
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  
+  .dropdown-conteudo select,
+  .dropdown-conteudo input[type="text"] {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #bbb;
+    font-size: 14px;
+  }
+  
+  .dropdown-conteudo button {
+    background-color: #6cbf84;
+    color: #fff;
+    border: none;
+    padding: 8px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .dropdown-conteudo button:hover {
+    background-color: #56a96e;
+  }
+  
+  .dropdown-conteudo hr {
+    margin: 1rem 0;
+    border: none;
+    border-top: 1px solid #eee;
+  }
+  
