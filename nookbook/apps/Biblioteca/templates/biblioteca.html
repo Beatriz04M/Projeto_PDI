@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<link rel="stylesheet" href="{% static 'Biblioteca/css/biblioteca.css' %}">
+{% endblock %}
+
+{% block content %}
+{% if messages %}
+  <div class="mensagens">
+    {% for message in messages %}
+      <div class="alerta {% if message.tags %}{{ message.tags }}{% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="biblioteca-container">
+  <div class="titulo-biblioteca-wrapper">
+    <h1 class="titulo-biblioteca">As Minhas Estantes</h1>
+    <button class="btn-add-shelf" onclick="abrirModalEstante()">+ Adicionar Estante</button>
+  </div>
+  
+  <!-- Modal -->
+  <div id="modal-estante" class="modal-estante">
+    <div class="modal-conteudo">
+      <span class="fechar-modal" onclick="fecharModalEstante()">&times;</span>
+      <h2>Nova Estante</h2>
+      <form method="post" action="{% url 'criar_estante' %}">
+        {% csrf_token %}
+        <label for="cor">Nome:</label>
+        <input type="text" name="nome" placeholder="Nome da estante" required>
+        <br>
+        <div class="linha-cor">
+          <label for="cor">Cor:</label>
+          <input type="color" name="cor" value="#f9b4c6">
+        </div>        
+        <br>
+        <button type="submit">Criar</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="estantes-grid">
+    {% for estante, livros in estantes_com_livros %}
+    <div class="estante-card" data-cor="{{ estante.cor|default_if_none:'#f9b4c6'|default:'#f9b4c6' }}">
+      <div class="estante-header">
+        <h2>
+          <a href="{% url 'livros_da_estante' estante.id %}" class="link-estante">
+            {{ estante.nome }}
+          </a>
+        </h2>
+        <div class="dropdown">
+          <button class="dropdown-toggle" onclick="toggleMenu('{{ estante.id }}', event)">⋮</button>
+        </div>
+      </div>
+
+      <div class="livros-container">
+        {% for livro in livros %}
+          <div class="livro-item">
+            {% if livro.livro.capa %}
+              <img src="{{ livro.livro.capa.url }}" alt="{{ livro.livro.titulo }}">
+            {% else %}
+              <img src="{% static 'imagens/capa_default.jpg' %}" alt="Capa não disponível">
+            {% endif %}
+
+            <form method="post" action="{% url 'remover_livro_estante' %}">
+              {% csrf_token %}
+              <input type="hidden" name="livro_id" value="{{ livro.livro.id }}">
+              <input type="hidden" name="estante_id" value="{{ estante.id }}">
+              <button type="submit">×</button>
+            </form>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- MENU fora do .estante-card -->
+    <div class="dropdown-menu global" id="menu-{{ estante.id }}">
+      <div class="header-dropdown">
+        <span class="titulo-menu">Editar estante</span>
+        <button class="btn-fechar" onclick="fecharMenu('{{ estante.id }}')">×</button>
+      </div>    
+        {% if estante.nome not in 'A ler,Quero Ler,Lidos,Abandonados' %}
+          <form method="post" action="{% url 'editar_estante' estante.id %}" class="flex-linha">
+            {% csrf_token %}
+            <input type="text" name="novo_nome" placeholder="Renomear" required>
+            <button type="submit">Renomear estante</button>
+          </form>
+        {% endif %}
+
+      <form method="post" action="{% url 'mudar_cor_estante' estante.id %}" class="flex-linha">
+        {% csrf_token %}
+        <input type="color" name="cor" value="{{ estante.cor|default:'#f9b4c6' }}">
+        <button type="submit">Atualizar cor</button>
+      </form>
+    
+      <form method="post" action="{% url 'mudar_cor_estante' estante.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="cor" value="remover">
+        <button type="submit">Remover cor</button>
+      </form>
+    
+      {% if estante.nome not in 'A ler,Quero Ler,Lidos,Abandonados' %}
+        <!-- Botão que abre a modal -->
+        <button type="button" class="btn-apagar" onclick="abrirConfirmacao('{{ estante.id }}')">Apagar estante</button>
+
+        <!-- Modal de confirmação -->
+        <div class="modal-confirmacao" id="modal-confirmar-{{ estante.id }}">
+          <div class="modal-conteudo">
+            <p>🗑️ Tens a certeza que queres apagar a estante <strong>{{ estante.nome }}</strong>?</p>
+            <div class="botoes-modal">
+              <form method="post" action="{% url 'eliminar_estante' estante.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-confirmar">Sim, apagar</button>
+              </form>
+              <button type="button" class="btn-cancelar" onclick="fecharConfirmacao('{{ estante.id }}')">Cancelar</button>
+            </div>
+          </div>
+        </div>
+
+      {% endif %}
+    </div>
+    
+    {% endfor %}
+  </div>
+</div>
+
+<script src="{% static 'Biblioteca/js/biblioteca.js' %}"></script>
+{% endblock %}

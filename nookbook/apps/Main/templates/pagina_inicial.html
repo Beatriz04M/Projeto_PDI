@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<link rel="stylesheet" href="{% static 'Main/css/main.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="pagina-leitura">
+
+  <!-- ✅ Mensagens flutuantes -->
+  {% if messages %}
+    <div class="mensagens-flutuante">
+      {% for message in messages %}
+        <p class="mensagem {{ message.tags }}">{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <h2>As minhas leituras</h2>
+  <div class="zona-leitura">
+  {% if estante_a_ler %}
+    {% if em_leitura %}
+    <div class="carousel-container">
+      <div class="carousel-track" id="carousel-track">
+        {% for livro in em_leitura %}
+          <div class="livro-slide" data-id="{{ livro.id }}" data-capa="{{ livro.capa }}" data-progresso-id="{{ livro.progresso_id }}">
+            <div class="livro-card-carousel">
+              <img src="{{ livro.capa }}" alt="Capa de {{ livro.titulo }}">
+              <div class="info">
+                <h3 class="titulo-limitado">{{ livro.titulo }}</h3>
+                <p>{{ livro.autor }}</p>
+                <div class="progress-container">
+                  <div class="progress-bar" data-percentagem="{{ livro.percentagem|floatformat:0 }}"></div>
+                </div>
+                <p>{{ livro.pag_atual }} de {{ livro.pag_total }} páginas – {{ livro.percentagem }}%</p>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <button class="carousel-btn next" onclick="moverCarrossel(1)">→</button>
+    </div>
+    {% else %}
+      <p>Sem livros em leitura neste momento.</p>
+    {% endif %}
+  {%endif %}
+
+    <!-- === FORMULÁRIO "LEU HOJE?" === -->
+    <div class="leitura-box">
+      <div class="leitura-conteudo">
+        <p>Leu hoje?</p>
+        <div class="dias-semana" id="dias-semana">
+          <span data-day="0">S</span>
+          <span data-day="1">T</span>
+          <span data-day="2">Q</span>
+          <span data-day="3">Q</span>
+          <span data-day="4">S</span>
+          <span data-day="5">S</span>
+          <span data-day="6">D</span>
+        </div>
+
+        <form method="POST" action="{% url 'registar_leitura' %}" class="leitura-form" id="leitura-form">
+          {% csrf_token %}
+          <input type="hidden" name="progresso_id" id="progresso-id">
+          <input type="number" name="paginas" placeholder="Ex: 15" min="1" required>
+          <button type="submit">Eu li hoje</button>
+        </form>
+      </div>
+      
+      {% if em_leitura %}
+        <div class="capa-lateral-wrapper">
+          <img src="{{ em_leitura.0.capa }}" alt="Capa" class="capa-lateral" id="capa-formulario">
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- === RECOMENDADOS === -->
+  <section class="recomendados">
+    <h2>Recomendados para ti</h2>
+
+    {% if livros_recomendados|length %}
+      <div class="recomendados-scroll">
+        <div class="recomendados-grid">
+          {% for livro in livros_recomendados %}
+            <div class="livro-card-recomendado">
+              {% if livro.capa %}
+                <a href="{% url 'detalhes_livro' livro.id %}">
+                  <img src="{{ livro.capa.url }}" alt="Capa de {{ livro.titulo }}">
+                </a>
+              {% else %}
+                <img src="{% static 'img/capa_placeholder.jpg' %}" alt="Sem capa">
+              {% endif %}
+
+              <div class="livro-info">
+                <h3>{{ livro.titulo }}</h3>
+                <p>{{ livro.autor }}</p>
+                {% with livro.media_avaliacoes|floatformat:0|add:"0" as estrelas %}
+                  <div class="estrelas">
+                    {% for i in "12345"|make_list %}
+                      {% if estrelas|add:"-1" >= forloop.counter0 %}
+                        ★
+                      {% else %}
+                        ☆
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                {% endwith %}
+                {% if estante_a_ler %}
+                  <form method="POST" action="{% url 'adicionar_livro_estante' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="livro_id" value="{{ livro.id }}">
+                    <input type="hidden" name="estante_id" value="{{ estante_a_ler.id }}">
+                  </form>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% else %}
+      <p>Sem recomendações disponíveis no momento.</p>
+    {% endif %}
+  </section>
+
+</div>
+<script>
+  const diasLidosPorProgresso = JSON.parse('{{ dias_lidos_json|default:"{}"|escapejs }}');
+</script>
+<script src="{% static 'Main/js/main.js' %}"></script>
+{% endblock %}

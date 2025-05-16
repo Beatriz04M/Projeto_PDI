@@ -1,0 +1,353 @@
+/* ======================== */
+/* Página principal */
+.pagina-leitura {
+  padding: 20px;
+  background-color: #fffde7;
+}
+
+/* ======================== */
+/* Zona: Os teus livros */
+.zona-leitura {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 30px;
+  flex-wrap: wrap;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+body.js-carregado .zona-leitura {
+  opacity: 1;
+}
+
+.carousel-container {
+  position: relative;
+  width: 100%;
+  max-width: 650px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.4s ease-in-out;
+  width: 100%;
+  visibility: hidden;
+}
+
+body.js-carregado .carousel-track {
+  visibility: visible;
+}
+
+.livro-slide {
+  min-width: 100%;
+  box-sizing: border-box;
+  display: flex;
+}
+
+.livro-card-carousel {
+  display: flex;
+  align-items: center;
+  background-color: #fff7dd;
+  padding: 20px 24px;
+  border-radius: 16px;
+  gap: 20px;
+  width: 480px;
+  height: 170px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+}
+
+.livro-card-carousel img {
+  height: 120px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.livro-card-carousel .info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.livro-card-carousel .info h3 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #222;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.livro-card-carousel .info p {
+  margin: 6px 0 0;
+  color: #444;
+  font-size: 15px;
+}
+
+.progress-container {
+  background-color: #eee;
+  border-radius: 10px;
+  height: 10px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background-color: #4caf50;
+  height: 100%;
+  transition: width 0.3s ease-in-out;
+}
+
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  right: 105px;
+  transform: translateY(-50%);
+  background-color: #ffe2b3;
+  border: none;
+  border-radius: 50%;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-btn:hover {
+  background-color: #ffc86c;
+}
+
+/* ======================== */
+/* Leitura de hoje (direita) */
+.leitura-box {
+  background-color: #fffef2;
+  padding: 10px 28px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  max-width: 600px;
+  margin-right: 40px;
+  min-height: 170px;
+  position: relative;
+}
+
+.leitura-conteudo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dias-semana {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.dias-semana span {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+  border-radius: 50%;
+  background-color: #eee;
+  color: #333;
+  margin: 2px;
+  font-weight: bold;
+  cursor: default;
+}
+
+.dias-semana span.ativo {
+  background-color: #f9b4c6;
+  color: white;
+}
+
+.leitura-form input {
+  padding: 8px;
+  margin-top: 4px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  width: 100%;
+  max-width: 160px;
+}
+
+.leitura-form button {
+  margin-top: 5px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 20px;
+  background-color: #f0b83c;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.capa-lateral-wrapper {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.capa-lateral {
+  height: 110px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+/* ======================== */
+/* Mensagens */
+.mensagens-flutuante {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.mensagem {
+  background-color: #d4edda;
+  color: #155724;
+  border-left: 5px solid #28a745;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  max-width: 400px;
+  text-align: center;
+  animation: fadeout 5s ease forwards;
+}
+
+@keyframes fadeout {
+  0%, 90% { opacity: 1; }
+  100%   { opacity: 0; display: none; }
+}
+
+/* ======================== */
+/* Recomendados */
+.recomendados {
+  margin-top: 40px;
+}
+
+.recomendados-scroll {
+  overflow-x: auto;
+  padding-bottom: 12px;
+  scrollbar-width: none;
+}
+
+.recomendados-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.recomendados-grid {
+  display: flex;
+  gap: 1.5rem;
+  min-width: fit-content;
+  padding-bottom: 10px;
+}
+
+.livro-card-recomendado {
+  flex: 0 0 auto;
+  width: 150px;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  transition: transform 0.2s ease;
+}
+
+.livro-card-recomendado:hover {
+  transform: translateY(-3px);
+}
+
+.livro-card-recomendado img {
+  width: 128px;
+  height: 192px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.8rem;
+}
+
+.livro-info {
+  text-align: center;
+  width: 100%;
+}
+
+.livro-info h3 {
+  font-size: 15px;
+  font-weight: bold;
+  margin: 0.4rem 0 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.livro-info p {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.estrelas {
+  font-size: 14px;
+  color: gold;
+  margin: 0.4rem 0;
+}
+
+.livro-card-recomendado form {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.btn-adicionar {
+  margin-top: 0.4rem;
+  background-color: #f0b83c;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #222;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-adicionar:hover {
+  background-color: #e5a728;
+}
+
+/* ======================== */
+/* Responsivo */
+@media (max-width: 900px) {
+  .zona-leitura {
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+
+  .carousel-container,
+  .leitura-box {
+    max-width: 100%;
+    flex: 1 1 100%;
+  }
+}

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<link rel="stylesheet" href="{% static 'Livros/css/resultados.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="linha-topo">
+  <h2>Resultados para "{{ query }}"</h2>
+</div>
+
+
+{% if livros_bd or livros_api %}
+  <div class="livros-container">
+
+    {# Livros da Base de Dados #}
+    {% for livro in livros_bd %}
+      <a href="{% url 'detalhe_livro' livro.id %}" class="livro-link">
+        <div class="livro-card">
+          <img src="{% if livro.capa %}{{ livro.capa.url }}{% else %}{% static 'imagens/capa_default.png' %}{% endif %}" alt="Capa do livro">
+          <div class="livro-titulo">{{ livro.titulo }}</div>
+          <div class="livro-autor"><strong>Autor:</strong> {{ livro.autor }}</div>
+          <div class="livro-desc">{{ livro.sinopse|default:"Sem descrição."|truncatechars:150 }}</div>
+          <div class="livro-nota">⭐ 
+            {% if livro.media_avaliacoes is not None %}
+              {{ livro.media_avaliacoes|floatformat:1 }}
+            {% else %}
+              N/A
+            {% endif %}
+          </div>
+        </div>
+      </a>
+    {% endfor %}
+
+    {# Livros da API #}
+    {% for livro in livros_api %}
+      <a href="{% url 'detalhe_livro_api' livro.google_id %}" class="livro-link">
+        <div class="livro-card">
+          <img src="{% if livro.capa %}{{ livro.capa }}{% else %}{% static 'imagens/capa_default.png' %}{% endif %}" alt="Capa do livro">
+          <div class="livro-titulo">{{ livro.titulo|default:"Título Desconhecido" }}</div>
+          <div class="livro-autor"><strong>Autor:</strong> {{ livro.autor|default:"Autor Desconhecido" }}</div>
+          <div class="livro-desc">{{ livro.descricao|default:"Sem descrição."|truncatechars:150 }}</div>
+          <div class="livro-nota">⭐ 
+            {% if livro.nota is not None %}
+              {{ livro.nota|floatformat:1 }}
+            {% else %}
+              N/A
+            {% endif %}
+          </div>
+        </div>
+      </a>
+    {% endfor %}
+
+  </div>
+{% else %}
+  <p class="sem-resultados">Sem resultados para "{{ query }}".</p>
+{% endif %}
+</div>
+
+{% endblock %}

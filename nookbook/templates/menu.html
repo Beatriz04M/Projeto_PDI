@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>NookBook</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        
+    </style>
+</head>
+<body>
+<button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+<div class="container">
+    <aside id="sidebar" class="sidebar">
+        <div class="top">
+          <div class="logo">
+            <a href="{% url 'pagina_inicial' %}"> <img src="{% static 'imagens/logo.png' %}" alt="Logo"> </a>  
+          </div>
+        </div>
+      
+        <nav class="nav">
+          <a href="{% if user.is_authenticated %}{% url 'inicio' %}{% else %}{% url 'pagina_login' %}{% endif %}" class="nav-item {% if request.resolver_match.url_name == 'inicio' %}active{% endif %}">
+            <i class="bi bi-house"></i> Home
+          </a>
+          <a href="{% if user.is_authenticated %}{% url 'pagina_inicial' %}{% else %}{% url 'pagina_login' %}{% endif %}" class="nav-item {% if request.resolver_match.url_name == 'perfil' %}active{% endif %}">
+            <i class="bi bi-person"></i> Perfil
+          </a>
+          <a href="{% if user.is_authenticated %}{% url 'pagina_biblioteca' %}{% else %}{% url 'pagina_login' %}{% endif %}" class="nav-item {% if request.resolver_match.url_name == 'pagina_biblioteca' %}active{% endif %}">
+                   <i class="bi bi-book"></i> Biblioteca
+          </a>
+          <a href="{% if user.is_authenticated %}{% url 'adicionar_livro' %}{% else %}{% url 'pagina_login' %}{% endif %}" class="nav-item {% if request.resolver_match.url_name == 'adicionar_livro' %}active{% endif %}">
+            <i class="bi bi-plus-circle"></i> Adicionar Livro
+          </a>
+          <a href="{% if user.is_authenticated %}{% url 'pagina_inicial' %}{% else %}{% url 'pagina_login' %}{% endif %}" class="nav-item {% if request.resolver_match.url_name == 'desafios' %}active{% endif %}">
+            <i class="bi bi-controller"></i> Desafios
+          </a>
+        </nav>
+      
+        <div class="bottom-profile">
+          {% if user.is_authenticated and user.foto_perfil %}
+            <img src="{{ user.foto_perfil.url }}" alt="Perfil">
+          {% else %}
+            <img src="{% static 'imagens/profile_picture.png' %}" alt="Perfil">
+          {% endif %}
+          <div class="profile-info">
+            <strong>Olá,</strong><br>
+            <span>{% if user.is_authenticated %}{{ user.username }}{% else %}Visitante{% endif %}</span>
+          </div>
+        </div>
+      </aside>
+          
+
+    <main id="main-content">
+        {% if not esconder_barra_pesquisa %}
+        <div class="topo-detalhes-pesquisa">
+          <form action="{% url 'pesquisar_livros' %}" method="get" class="barra-pesquisa-estilizada">
+            <input type="text" name="q" placeholder="Pesquisar livros..." required>
+            <button type="submit" aria-label="Pesquisar">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
+              </svg>
+            </button>
+          </form>
+        </div>
+      {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </main>
+</div>
+
+<script>
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('show');
+}
+</script>
+</body>
+</html>

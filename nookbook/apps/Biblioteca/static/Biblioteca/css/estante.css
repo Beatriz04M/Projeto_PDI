@@ -1,0 +1,157 @@
+.pagina-estante {
+  padding: 2rem;
+  background-color: #fffaf5;
+  min-height: 100vh;
+}
+
+.pagina-estante h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #333;
+  text-align: center;
+}
+
+.estante-livros-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 2rem;
+  justify-items: center;
+}
+
+.estante-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff6f8;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+  flex-wrap: wrap; 
+}
+
+.estante-titulo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-top: 0;
+}
+
+.pesquisa-form {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.pesquisa-form input[type="text"] {
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 14px;
+  width: 200px;
+}
+
+.pesquisa-form button {
+  background-color: #f9b4c6;
+  border: none;
+  color: white;
+  font-size: 18px;
+  padding: 10px 15px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pesquisa-form button:hover {
+  background-color: #f58faa;
+}
+
+@media (max-width: 600px) {
+  .estante-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pesquisa-form {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+
+  .pesquisa-form input[type="text"] {
+    flex: 1;
+    width: auto;
+  }
+}
+
+.livro-card {
+  background-color: #f9b4c6;
+  border-radius: 1.5rem;
+  padding: 1rem;
+  width: 160px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.livro-card:hover {
+  transform: translateY(-5px);
+}
+
+.livro-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 1rem;
+  object-fit: cover;
+  margin-bottom: 0.5rem;
+}
+
+.livro-card h3 {
+  font-size: 1rem;
+  margin: 0.5rem 0 0.2rem;
+  color: #2c2c2c;
+}
+
+.livro-card p {
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+
+.livro-card a {
+  display: inline-block;
+  background-color: #f06c91;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.livro-card a:hover {
+  background-color: #e4547a;
+}
+
+.pagina-estante p {
+  text-align: center;
+  color: #888;
+  font-size: 1rem;
+}
+
+.botao-flutuante {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #f9b4c6;
+  color: white;
+  font-size: 30px;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  text-align: center;
+  line-height: 60px;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
