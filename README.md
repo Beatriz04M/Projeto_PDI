@@ -1,6 +1,6 @@
 # NookBook - *Your perfect nook for every book!*
 
-![Logótipo NookBook](nookbook/static/imagens/logo.png)
+![Logótipo NookBook](nookbook/static/imagens/logo2.png)
 
 **Bem-vindo(a) ao repositório oficial do NookBook!**  
 Este projeto foi desenvolvido no âmbito da unidade curricular de **Projeto e Desenvolvimento Informático**, inserida na **Licenciatura em Informática de Gestão** da **Coimbra Business School | ISCAC**.
@@ -8,7 +8,7 @@ O NookBook é uma plataforma digital concebida para apaixonados por leitura que 
 
 ## 📖 Sobre o NookBook
 
-O **NookBook** é uma plataforma digital dedicada à **gestão de leituras**, combinando funcionalidades práticas com **elementos de gamificação**. Através do NookBook, os utilizadores podem organizar os seus livros, acompanhar o progresso de leitura, escrever avaliações, e participar em desafios motivacionais.  
+O **NookBook** é uma plataforma digital dedicada à **gestão de leituras**, combinando funcionalidades práticas com ***gamification***. Através do NookBook, os utilizadores podem organizar os seus livros, acompanhar o progresso de leitura, escrever avaliações, e participar em desafios motivacionais.  
 Foi pensado como um espaço personalizado e motivador para leitores de todos os níveis, promovendo o hábito da leitura de forma leve, intuitiva e interativa.
 
 ## 🎯 Objetivo do Projeto
