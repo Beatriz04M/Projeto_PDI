@@ -1,14 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Estante, Biblioteca, ProgressoLeitura
-from nookbook.apps.Livros.models import Livro
+from nookbook.apps.Livros.models import Livro, Leitura
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django.db.models import Q
-from nookbook.apps.Livros.views import adicionar_livro_a_estante
-from nookbook.apps.Livros.views import importar_dados_livro_api
+from nookbook.apps.Livros.views import adicionar_livro_a_estante, importar_dados_livro_api
 
 def garantir_estantes_default(utilizador):
     nomes = ['A Ler', 'Quero Ler', 'Lidos', 'Abandonados']
@@ -18,10 +16,21 @@ def garantir_estantes_default(utilizador):
 @login_required
 def pagina_biblioteca(request):
     garantir_estantes_default(request.user)
-    estantes = Estante.objects.filter(utilizador=request.user).order_by('nome')  
+    estantes = Estante.objects.filter(utilizador=request.user)
+
+    ordem_default = ['A Ler', 'Quero Ler', 'Lidos', 'Abandonados']
+    estantes_ordenadas = []
+
+    for nome in ordem_default:
+        estante = estantes.filter(nome=nome).first()
+        if estante:
+            estantes_ordenadas.append(estante)
+
+    estantes_personalizadas = estantes.exclude(nome__in=ordem_default).order_by('nome')
+    estantes_ordenadas.extend(estantes_personalizadas)
 
     estantes_com_livros = []
-    for estante in estantes:
+    for estante in estantes_ordenadas:
         livros = Biblioteca.objects.filter(estante_customizada=estante).select_related('livro')
         estantes_com_livros.append((estante, livros))
         estante.cor = estante.cor or '#f9b4c6'
@@ -35,6 +44,7 @@ def pagina_biblioteca(request):
         'livros_disponiveis': livros_disponiveis
     })
 
+
 @login_required
 def criar_estante(request):
     if request.method == 'POST':
@@ -47,7 +57,7 @@ def criar_estante(request):
             estante = get_object_or_404(Estante, id=estante_id, utilizador=request.user)
         else:
             if Estante.objects.filter(utilizador=request.user, nome=nome).exists():
-                messages.error(request, '❌ Já existe uma estante com esse nome.')
+                messages.error(request, 'Já existe uma estante com esse nome!')
                 return redirect('pagina_biblioteca')
             estante = Estante.objects.create(utilizador=request.user, nome=nome, cor=cor)
 
@@ -60,9 +70,9 @@ def criar_estante(request):
 
             if not Biblioteca.objects.filter(utilizador=request.user, livro=livro).exists():
                 Biblioteca.objects.create(utilizador=request.user, livro=livro, estante_customizada=estante)
-                messages.success(request, f"📚 Livro '{livro.titulo}' adicionado à estante '{estante.nome}'.")
+                messages.success(request, f"Livro '{livro.titulo}' adicionado à estante '{estante.nome}'.")
             else:
-                messages.warning(request, f"⚠️ O livro '{livro.titulo}' já está na tua biblioteca.")
+                messages.warning(request, f"O livro '{livro.titulo}' já está na tua biblioteca.")
 
         return redirect('pagina_biblioteca')
 
@@ -115,7 +125,9 @@ def remover_livro_estante(request):
             )
             entrada.delete()
         except Biblioteca.DoesNotExist:
-            messages.error(request, "❌ Livro não encontrado nesta estante.")
+            messages.error(request, "Livro não encontrado nesta estante.")
+
+        return redirect('pagina_estante', estante_id=estante_id)
 
     return redirect('pagina_biblioteca')
 
@@ -126,7 +138,7 @@ def editar_estante(request, estante_id):
         estante = get_object_or_404(Estante, id=estante_id, utilizador=request.user)
 
         if Estante.objects.filter(utilizador=request.user, nome=novo_nome).exclude(id=estante.id).exists():
-            messages.error(request, "❌ Já existe uma estante com esse nome.")
+            messages.error(request, "Já existe uma estante com esse nome.")
         else:
             estante.nome = novo_nome
             estante.save()
@@ -160,6 +172,9 @@ def pagina_estante(request, estante_id):
     livros_na_estante = Biblioteca.objects.filter(estante_customizada=estante).select_related('livro')
     livros = [b.livro for b in livros_na_estante]
 
+    leituras = Leitura.objects.filter(utilizador=request.user)
+    leituras_dict = {l.livro_id: l.id for l in leituras}
+
     query = request.GET.get('q')
     resultados = []
 
@@ -172,7 +187,7 @@ def pagina_estante(request, estante_id):
         'estante': estante,
         'livros': livros,
         'resultados': resultados,
-        'esconder_barra_pesquisa': True,
+        'leituras_dict': leituras_dict, 
     }
     return render(request, 'estante.html', context)
 

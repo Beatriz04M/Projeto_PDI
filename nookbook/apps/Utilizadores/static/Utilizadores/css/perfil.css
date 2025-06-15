@@ -1,0 +1,453 @@
+/* === CONTAINER PERFIL === */
+.profile-header-new {
+  display: flex;
+  align-items: center;
+  padding: 24px;
+  margin-bottom: 24px;
+  gap: 24px;
+}
+
+.profile-image-section {
+  flex-shrink: 0;
+}
+
+.profile-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ccc;
+}
+
+.profile-details {
+  flex: 1;
+}
+
+.profile-username {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.profile-bio {
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.profile-location {
+  color: #888;
+  margin-bottom: 30px;
+}
+
+.profile-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-edit {
+  background-color: #eed9a4;
+  color: black;
+  font-weight: bold;
+  padding: 6px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-logout-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.btn-logout-icon:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* === TABS === */
+.tabs {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tab {
+  background: none;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #888;
+  padding: 0.3rem 0;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  color: #333;
+}
+
+.tab.active {
+  color: #000;
+  border-color: #000;
+}
+
+/* === CONTEÚDO DAS TABS === */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* === GRELHA DE ESTATÍSTICAS === */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+/* === CARDS === */
+.card {
+  background-color: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+/* === OBJETIVO DE LEITURA === */
+.reading-goal {
+  background-color: #f8d4d4;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  font-family: 'Arial', sans-serif;
+}
+
+.goal-count {
+  font-size: 2rem;
+  color: #333;
+}
+
+.goal-count strong:first-child {
+  font-weight: 800;
+  color: #000;
+}
+
+.goal-text {
+  margin-top: 0.5rem;
+  font-weight: 500;
+  color: #444;
+}
+
+.goal-year {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #555;
+}
+
+/* === DESAFIOS === */
+.desafios-section {
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+.desafios-wrapper {
+  display: flex;
+  gap: 3rem;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.desafios-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  max-width: 70%;
+  flex: 1;
+}
+
+.desafio-card {
+  width: 260px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.desafio-top {
+  padding: 1rem;
+  color: #111;
+}
+
+.desafio-top h4 {
+  font-size: 0.9rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+.desafio-top h3 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0.3rem 0;
+}
+
+.desafio-contador {
+  background: #fff;
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+.desafio-bottom {
+  background: #f5f5f5;
+  padding: 0.8rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-participar {
+  background: #ecd9a2;
+  border: none;
+  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-participar.ativo {
+  background: #c9ad4f;
+  color: white;
+}
+
+.desafios-acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  min-width: 220px;
+}
+
+.btn-acao {
+  background: #f0deac;
+  border: none;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  font-weight: bold;
+  text-decoration: none;
+  display: block;
+  transition: background 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+  color: black;
+}
+
+/* Responsivo: ajustes para ecrãs < 500px */
+@media (max-width: 500px) {
+  .desafios-wrapper {
+    flex-direction: column;
+  }
+
+  .desafios-cards {
+    max-width: 100%;
+    justify-content: center;
+  }
+
+  .desafio-card {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .desafios-acoes {
+    width: 100%;
+    max-width: 400px;
+    margin-top: 2rem;
+  }
+
+  .btn-acao {
+    width: 100%;
+  }
+
+}
+
+/* Review */
+.reviews-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  margin-top: 1rem;
+}
+
+.review-card {
+  display: flex;
+  background: #fffaf5;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  gap: 1rem;
+}
+
+.review-capa {
+  width: 80px;
+  height: auto;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.review-info {
+  flex: 1;
+}
+
+.review-info h3 {
+  margin: 0 0 0.2rem 0;
+  font-size: 1.1rem;
+}
+
+.review-info .autor {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.review-info .comentario {
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+}
+
+.review-info .avaliacao {
+  font-weight: bold;
+  color: #444;
+}
+
+/* === RESPONSIVO === */
+@media screen and (max-width: 600px) {
+  .profile-header-new {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .profile-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .tabs {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .tab {
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .profile-image {
+    width: 100px;
+    height: 100px;
+  }
+
+  .profile-username {
+    font-size: 20px;
+  }
+
+  .btn-edit,
+  .btn {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .goal-count {
+    font-size: 1.6rem;
+  }
+
+  .goal-text {
+    font-size: 0.9rem;
+  }
+
+  .card,
+  .reading-goal {
+    padding: 1rem;
+  }
+
+  .tab {
+    font-size: 0.85rem;
+  }
+}
+
+.profile-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.profile-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .profile-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .profile-username {
+    margin-bottom: 0.5rem;
+  }
+
+  .profile-buttons {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-header-new {
+    margin-top: 50px;
+    margin-left: 16px;
+    margin-right: 0;
+    padding: 16px;
+  }
+
+  .tabs {
+    margin-left: 16px; 
+    margin-right: 0;   
+    margin-top: 16px;
+  }
+
+  .tab-content {
+    padding-left: 16px;
+    padding-right: 0;
+    gap: 1rem;
+  }
+
+  .card,
+  .reading-goal {
+    margin-bottom: 16px;
+  }
+}

@@ -1,40 +1,54 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% load custom_filters %}
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/styles.css' %}">
 <link rel="stylesheet" href="{% static 'Biblioteca/css/estante.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="pagina-estante">
-  <div class="estante-header">
-  <h2 class="estante-titulo">{{ estante.nome }}</h2>
-
-  <form method="GET" action="{% url 'pesquisar_livros' %}" class="pesquisa-form">
-  <input type="text" name="q" placeholder="Pesquisar livros..." required>
-  <input type="hidden" name="estante_id" value="{{ estante.id }}">
-  <button type="submit" aria-label="Pesquisar">+</button>
-</form>
-</div>
-
-  <h3>Livros nesta estante:</h3>
-  {% if livros %}
-    <div class="estante-livros-grid">
-      {% for livro in livros %}
-        <div class="livro-card">
-          {% if livro.capa %}
-            <img src="{{ livro.capa.url }}" alt="Capa de {{ livro.titulo }}">
-          {% else %}
-            <img src="{% static 'imagens/capa_default.png' %}" alt="Sem capa">
-          {% endif %}
-          <h3>{{ livro.titulo }}</h3>
-          <p>{{ livro.autor }}</p>
-        </div>
-      {% endfor %}
+  <div class="pagina-estante">
+    <div class="estante-header">
+<h2 class="estante-titulo">
+  <a href="/biblio/biblioteca/" class="voltar-biblioteca">
+    <i class="bi bi-chevron-left"></i> <strong>{{ estante.nome }}</strong>
+  </a>
+</h2>
     </div>
-  {% else %}
-    <p>Esta estante ainda não tem livros.</p>
-  {% endif %}
+
+    <h3>Livros nesta estante:</h3>
+    {% if livros %}
+      <div class="estante-livros-grid">
+  {% for livro in livros %}
+    <div class="livro-card-estante">
+      <form action="{% url 'remover_livro_estante' %}" method="POST" class="remover-form">
+        {% csrf_token %}
+        <input type="hidden" name="livro_id" value="{{ livro.id }}">
+        <input type="hidden" name="estante_id" value="{{ estante.id }}">
+        <button type="submit" class="btn-remover" title="Remover">×</button>
+      </form>
+
+      <a href="{% url 'detalhes_livro' livro.id %}">
+        {% if livro.capa %}
+          <img src="{{ livro.capa.url }}" alt="Capa de {{ livro.titulo }}" class="capa">
+        {% else %}
+          <img src="{% static 'imagens/capa_default.png' %}" alt="Sem capa" class="capa">
+        {% endif %}
+      </a>
+
+      <div class="info-livro-estante">
+        <h3>{{ livro.titulo }}</h3>
+        <p>{{ livro.autor }}</p>
+        
+        {% with leituras_dict|get_item:livro.id as leitura_id %}
+            <a href="{% url 'iniciar_ou_ver_leitura' livro.id %}" class="btn-historico">Ver histórico</a>
+        {% endwith %}
+      </div>
+    </div>
+  {% endfor %}
 </div>
+
+    {% else %}
+      <p>Esta estante ainda não tem livros.</p>
+    {% endif %}
+  </div>
 {% endblock %}

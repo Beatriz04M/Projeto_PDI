@@ -13,7 +13,7 @@
 
 
 {% if livros_bd or livros_api %}
-  <div class="livros-container">
+  <div class="livros-container {% if livros_api|length == 1 and livros_bd|length == 0 %}apenas-um{% endif %}">
 
     {# Livros da Base de Dados #}
     {% for livro in livros_bd %}

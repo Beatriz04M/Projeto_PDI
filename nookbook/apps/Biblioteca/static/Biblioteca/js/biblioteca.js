@@ -1,4 +1,3 @@
-// Autoesconde mensagens após 3s
 document.addEventListener("DOMContentLoaded", () => {
     const mensagens = document.querySelector(".mensagens");
     if (mensagens) {
@@ -11,16 +10,27 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.addEventListener("DOMContentLoaded", function () {
-    const estantes = document.querySelectorAll(".estante-card");
-  
-    estantes.forEach(card => {
-      const cor = card.getAttribute("data-cor");
-      if (cor) {
-        card.style.backgroundColor = cor;
-      }
-    });
+  const estantes = document.querySelectorAll(".estante-card");
+
+  estantes.forEach(card => {
+    const cor = card.getAttribute("data-cor");
+    if (cor) {
+      card.style.backgroundColor = cor;
+    }
   });
-  
+
+  estantes.forEach(card => {
+    card.addEventListener("click", function (e) {
+      if (e.target.closest("form") || e.target.tagName === "BUTTON") return;
+
+      const url = card.getAttribute("data-url");
+      if (url) {
+        window.location.href = url;
+      }
+    });
+  });
+
+});
   
   function abrirModalEstante() {
     document.getElementById("modal-estante").style.display = "flex";
@@ -57,7 +67,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
   
-  // Função para abrir o dropdown
   function toggleMenu(estanteId, event) {
     event.stopPropagation();
   
@@ -72,29 +81,28 @@ document.addEventListener("DOMContentLoaded", () => {
   
     menu.style.display = 'flex';
   
-    // Verifica se é mobile
-    if (window.innerWidth <= 600) {
-      // Com CSS já controlamos o posicionamento
-      menu.style.left = '50%';
-      menu.style.top = '50%';
-      menu.style.transform = 'translate(-50%, -50%)';
-      return;
-    }
-  
-    // Posicionamento normal (desktop)
     const menuWidth = menu.offsetWidth;
     const spaceRight = window.innerWidth - rect.right;
   
     if (spaceRight < menuWidth) {
-      menu.style.left = `${rect.left - menuWidth}px`;
+      menu.style.left = `${rect.left - menuWidth + 36}px`;
     } else {
-      menu.style.left = `${rect.right}px`;
+      menu.style.left = `${rect.right - 200}px`;
     }
   
-    menu.style.top = `${rect.top + window.scrollY + 10}px`;
+    menu.style.top = `${rect.top + window.scrollY + 35}px`;
+
+    if (window.innerWidth <= 480) {
+      const rect = button.getBoundingClientRect();
+      menu.style.position = 'absolute';
+      menu.style.top = `${window.scrollY + rect.bottom + 8}px`;  
+      menu.style.left = `10px`;
+      menu.style.right = `auto`;
+      menu.style.display = 'flex';
+    } 
   }
   
-  
+
   function fecharMenu(id) {
     const menu = document.getElementById(`menu-${id}`);
     if (menu) menu.style.display = "none";
@@ -119,4 +127,3 @@ function fecharConfirmacao(estanteId) {
     modal.style.display = 'none';
   }
 }
-z

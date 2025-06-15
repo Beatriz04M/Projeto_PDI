@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/styles.css' %}">
 <link rel="stylesheet" href="{% static 'Livros/css/adicionar.css' %}">
 {% endblock %}
 
@@ -12,59 +11,72 @@
 {% if messages %}
   <ul class="mensagens">
     {% for message in messages %}
-      <li class="{{ message.tags }}">{{ message }}</li>
+      <li class="alerta {{ message.tags }}">{{ message }}</li>
     {% endfor %}
   </ul>
 {% endif %}
 
-<form method="POST" enctype="multipart/form-data" class="form-section">
+<form method="POST" enctype="multipart/form-data" class="form-section" onsubmit="return validarFormularioLivro()">
   {% csrf_token %}
 
-  <!-- Upload de Capa -->
+  <!-- CAPA  -->
   <div class="cover-upload">
     <label for="capa" class="placeholder" id="placeholder">+</label>
     <input type="file" id="capa" name="capa" accept="image/*" style="display: none;">
     <div class="preview-wrapper" id="preview-container" style="display: none;">
       <label for="capa">
-        <img id="preview-capa" src="#" alt="Pré-visualização">
+        <img id="preview-capa" src="{% static 'imagens/capa_default.png' %}" alt="Pré-visualização">
       </label>
       <i class="bi bi-x-circle remove-capa" id="remove-capa-btn" onclick="removerCapa()" title="Remover imagem" style="display: none;"></i>
     </div>
   </div>
 
   <div class="form-fields">
-    <input type="text" name="titulo" placeholder="Nome do Livro" value="{{ form_data.titulo|default_if_none:'' }}">
+    <!-- TÍTULO  -->
+    <input type="text" name="titulo" placeholder="Nome do Livro"
+           value="{{ form_data.titulo|default_if_none:'' }}" required>
 
-    <input type="text" name="autor" id="autor" placeholder="Autor" required value="{{ form_data.autor|default_if_none:'' }}">
+    <!-- AUTOR -->
+    <input type="text" name="autor" id="autor"
+          placeholder="Autor"
+          pattern="[A-Za-zÀ-ÿ\s.]+"
+          title="Só pode conter letras, espaços e pontos"
+          required
+          value="{{ form_data.autor|default_if_none:'' }}">
 
-    <!-- Nº Páginas e Ano -->
+    <!-- Nº PÁGINAS + ANO -->
     <div class="inline-inputs">
       <input type="number" name="num_pag" placeholder="Nº de páginas" min="1" required
              value="{{ form_data.num_pag|default_if_none:'' }}">
-      <input type="number" name="ano_publicacao" placeholder="Ano de publicação" min="0" max="{{ now.year }}"
-             value="{{ form_data.ano_publicacao|default_if_none:'' }}">
+      <input type="number" name="ano_publicacao" placeholder="Ano de publicação (opcional)"
+             min="1000" max="{{ now.year }}">
     </div>
 
-    <!-- Sinopse -->
-    <textarea name="sinopse" class="form-control auto-resize" rows="6" placeholder="Sinopse" required>{{ form_data.sinopse|default_if_none:'' }}</textarea>
+    <!-- SINOPSE -->
+    <textarea name="sinopse" class="form-control auto-resize" rows="6"
+              placeholder="Sinopse" required>{{ form_data.sinopse|default_if_none:'' }}</textarea>
 
-    <!-- Géneros e ISBN -->
+    <!-- GÉNEROS -->
     <div class="inline-inputs">
       <div class="tag-group">
         <div class="tag-input-wrapper" id="genre-tag-wrapper">
-          <input type="text" id="genre-input" placeholder="Géneros (ex: Romance, Aventura)" oninput="filterGenreSuggestions()" onkeydown="handleGenreKey(event)">
+          <input type="text" id="genre-input" placeholder="Géneros (ex: Romance, Aventura)"
+                 oninput="filterGenreSuggestions()" onkeydown="handleGenreKey(event)">
           <div class="suggestions" id="genre-suggestions"></div>
         </div>
+        <div id="erro-genero" style="color:red; font-size: 0.9em; margin-top: 5px;"></div>
       </div>
-      <input type="text" id="isbn" name="isbn" onblur="validarISBNInput()" placeholder="Insira o ISBN"
-             value="{{ form_data.isbn|default_if_none:'' }}">
-      <div id="erro-isbn"></div>
+
+      <!-- ISBN -->
+      <input type="text" id="isbn" name="isbn" onblur="validarISBNInput()"
+             placeholder="ISBN (opcional)" value="{{ form_data.isbn|default_if_none:'' }}">
+      <div id="erro-isbn" style="color:red; font-size: 0.9em;"></div>
     </div>
 
-    <!-- Palavras-chave -->
+    <!-- PALAVRAS-CHAVE -->
     <div class="tag-group">
       <div id="keywords-wrapper" class="tag-input-wrapper">
-        <input type="text" id="keyword-input" placeholder="Palavras-chave (ex: mistério, futebol)">
+        <input type="text" id="keyword-input" placeholder="Palavras-chave (ex: mistério, futebol) (opcional)">
         <input type="hidden" name="palavras_chave[]" id="keywords-hidden" value="{{ form_data.palavras_chave|join:',' }}">
       </div>
     </div>

@@ -1,6 +1,5 @@
 .pagina-estante {
   padding: 2rem;
-  background-color: #fffaf5;
   min-height: 100vh;
 }
 
@@ -14,7 +13,7 @@
 .estante-livros-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 2rem;
+  gap: 2.5rem;
   justify-items: center;
 }
 
@@ -22,19 +21,35 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #fff6f8;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding-bottom: 10px;
   margin-bottom: 20px;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
+  border-bottom: 1px solid #ccc; /* ← linha cinza divisória */
+  background-color: transparent; /* ← remove fundo branco */
+  box-shadow: none;              /* ← remove sombra */
+  border-radius: 0;              /* ← remove arredondamento */
 }
+
 
 .estante-titulo {
   font-size: 24px;
   font-weight: bold;
   color: #333;
   margin-top: 0;
+}
+
+.voltar-biblioteca {
+  color: #000; /* preto */
+  text-decoration: none; /* remove sublinhado */
+  font-weight: normal;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s ease;
+}
+
+.voltar-biblioteca:hover {
+  color: #e26b8c; /* rosa ao passar o rato */
 }
 
 .pesquisa-form {
@@ -67,91 +82,176 @@
   background-color: #f58faa;
 }
 
-@media (max-width: 600px) {
-  .estante-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .pesquisa-form {
-    width: 100%;
-    justify-content: space-between;
-    margin-top: 10px;
-  }
-
-  .pesquisa-form input[type="text"] {
-    flex: 1;
-    width: auto;
-  }
+/* Novo estilo para os livros nas estantes */
+.livro-card-estante {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 150px;
+  transition: transform 0.2s ease;
+  position: relative;
 }
 
-.livro-card {
-  background-color: #f9b4c6;
-  border-radius: 1.5rem;
-  padding: 1rem;
-  width: 160px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  transition: transform 0.2s;
+.livro-card-estante:hover {
+  transform: translateY(-3px);
 }
 
-.livro-card:hover {
-  transform: translateY(-5px);
-}
-
-.livro-card img {
-  width: 100%;
-  height: auto;
-  border-radius: 1rem;
+.livro-card-estante img {
+  width: 128px;
+  height: 192px;
   object-fit: cover;
-  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  margin-bottom: 0.8rem;
 }
 
-.livro-card h3 {
-  font-size: 1rem;
-  margin: 0.5rem 0 0.2rem;
+.info-livro-estante {
+  text-align: center;
+  width: 100%;
+}
+
+.info-livro-estante h3 {
+  font-size: 15px;
+  font-weight: bold;
+  margin: 0.4rem 0 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: #2c2c2c;
 }
 
-.livro-card p {
-  font-size: 0.85rem;
-  color: #555;
-  margin-bottom: 0.5rem;
+.info-livro-estante p {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.livro-card a {
-  display: inline-block;
-  background-color: #f06c91;
-  color: white;
-  padding: 0.4rem 0.8rem;
-  border-radius: 1rem;
-  font-size: 0.8rem;
-  text-decoration: none;
-  transition: background-color 0.3s;
+.estrelas-estante {
+  font-size: 14px;
+  color: gold;
+  margin: 0.4rem 0;
 }
 
-.livro-card a:hover {
-  background-color: #e4547a;
+/* Botão remover (mantido igual) */
+.remover-form {
+  position: absolute;
+  top: 8px;
+  right: 10px;
 }
 
-.pagina-estante p {
-  text-align: center;
-  color: #888;
-  font-size: 1rem;
-}
-
-.botao-flutuante {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  background-color: #f9b4c6;
-  color: white;
-  font-size: 30px;
+.btn-remover {
+  background-color: #ffffffcc;
+  border: 1px solid #ccc;
   border-radius: 50%;
-  width: 60px;
-  height: 60px;
+  color: #e74c3c;
+  font-size: 18px;
+  width: 28px;
+  height: 28px;
+  line-height: 1;
+  cursor: pointer;
   text-align: center;
-  line-height: 60px;
+  font-weight: bold;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-remover:hover {
+  background-color: #e74c3c;
+  color: white;
+  border-color: #e74c3c;
+}
+
+.btn-historico {
+  background-color: #fcb6c4;
+  color: black;
+  padding: 6px 12px;
+  border-radius: 6px;
   text-decoration: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  font-weight: bold;
+  display: inline-block;
+  margin-top: 8px;
+}
+
+.btn-historico:hover {
+  background-color: #f998b4;
+}
+
+@media (max-width: 768px) {
+  .pagina-estante {
+    padding: 2rem 2rem 2rem 3.5rem;
+  }
+
+  .estante-livros-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 3rem;
+    justify-items: center;
+    margin-left: 1rem;
+  }
+
+  .livro-card-estante {
+    width: 130px;
+    padding: 10px;
+  }
+
+  .info-livro-estante h3 {
+    font-size: 0.9rem;
+  }
+
+  .info-livro-estante p {
+    font-size: 0.75rem;
+  }
+ 
+  .botao-flutuante {
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    line-height: 50px;
+  }
+
+  .btn-historico {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pagina-estante h3 {
+    margin: 2rem 0;
+  }
+
+  .livro-card-estante {
+    width: 100%;
+  }
+
+  .estante-livros-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  .livro-card-estante img {
+    width: 100px;
+    height: 150px;
+  }
+
+  .info-livro-estante h3 {
+    font-size: 0.85rem;
+  }
+
+  .info-livro-estante p {
+    font-size: 0.7rem;
+  }
+
+  .btn-historico {
+    margin-top: 18px;
+    font-size: 12px;
+  }
 }

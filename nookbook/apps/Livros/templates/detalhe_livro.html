@@ -3,21 +3,20 @@
 {% load l10n %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/styles.css' %}">
 <link rel="stylesheet" href="{% static 'Livros/css/detalhes.css' %}">
 {% endblock %}
 
 {% block content %}
   {% if messages %}
-    <div class="mensagens">
+    <div id="mensagens-flutuantes">
       {% for message in messages %}
-        <div class="alerta {% if message.tags %}{{ message.tags }}{% endif %}">
-          {{ message }}
-        </div>
+        <div class="alerta {{ message.tags }}">{{ message }}</div>
       {% endfor %}
     </div>
   {% endif %}
 
+
+<a href="javascript:history.back()" class="btn-voltar"> <i class="bi bi-chevron-left"></i> Voltar </a>
 <div class="detalhes-livro-container">
   <div class="livro-topo">
     <div class="capa-box">
@@ -30,7 +29,8 @@
       <div class="dropdown-adicionar">
         <button onclick="toggleAdicionarDropdown()" class="btn-adicionar-livro">Adicionar <span class="seta">▼</span></button>
         
-        <div id="dropdown-adicionar-conteudo" class="dropdown-conteudo" style="display: none;">
+        <div id="dropdown-adicionar-conteudo" class="dropdown-conteudo" style="display: none;"> 
+        <span class="fechar-dropdown" onclick="fecharDropdown()">✕</span>
           <!-- Formulário para estante existente -->
           <form method="post" action="{% if livro.id %} {% url 'adicionar_livro_estante' %} {% else %} {% url 'guardar_livro_api' google_id=livro.google_id %}{% endif %}">
             {% csrf_token %}
@@ -45,8 +45,6 @@
             </select>
             <button type="submit">Adicionar</button>
           </form>
-
-          <hr>
 
           <!-- Criar nova estante e adicionar o livro -->
           <form method="post" action="{% if livro.id %}{% url 'criar_estante_e_adicionar_bd' %}{% else %}{% url 'criar_estante_e_adicionar_api' google_id=livro.google_id %} {% endif %}">
@@ -67,22 +65,18 @@
         <h1>{{ livro.titulo }}</h1>
         <span class="avaliacao-badge">
           {% if livro.id %}
-            {{ livro.media_avaliacoes_individual|floatformat:1 }} ⭐
+            <strong>{{ livro.media_avaliacoes_individual|floatformat:"1" }} ⭐</strong>
           {% elif media_api %}
-            {{ media_api|floatformat:1 }} ⭐
+            <strong>{{ media_api|floatformat:"1" }} ⭐</strong>
           {% else %}
-            N/A ⭐
+            <strong>N/A ⭐</strong>
           {% endif %}
         </span>
       </div>
       <p class="autor">{{ livro.autor }}</p>
-      <div class="descricao">
-        {% if livro.id %}
-          {{ livro.sinopse }}
-        {% else %}
-          {{ livro.descricao }}
-        {% endif %}
-      </div>
+      <div class="descricao">{% if livro.id %}{{ livro.sinopse }}{% else %}{{ livro.descricao|safe }}{% endif %}</div>
+
+
 
       <div class="tags-livro">
         {% if livro.id %}
@@ -103,8 +97,27 @@
   </div>
 </div>
 
-<div class="avaliacoes-section">
+<div class="avaliacoes-header">
   <h2>Avaliações e Comentários</h2>
+  {% if user.is_authenticated %}
+    <div class="comentario-wrapper">
+      <button class="btn-toggle-comentario" onclick="toggleComentarioForm()">+ Comentar</button>
+      <div class="comentario-dropdown" id="comentario-form" style="display: none;">
+      <span class="fechar-form" onclick="fecharComentarioForm()">✕</span>
+        <form action="{% if livro.id %}
+                        {% url 'adicionar_comentario' livro_id=livro.id %}
+                      {% else %}
+                        {% url 'comentar_api' google_id=livro.google_id %}
+                      {% endif %}" method="post">
+          {% csrf_token %}
+          <textarea name="comentario" placeholder="Escreve o teu comentário..." required></textarea>
+          <input type="number" name="avaliacao" min="1" max="5" step="0.5" required placeholder="Avaliação (1 a 5)">
+          <button type="submit" class="btn-comentar">Comentar</button>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+</div>
 
   {% if avaliacoes_api %}
     <p>{{ avaliacoes_api|length }} comentário(s)</p>
@@ -123,9 +136,19 @@
         </div>
         <p class="avaliacao-nota">⭐ {{ avaliacao.avaliacao|floatformat:"1" }}</p>
         <p class="texto">{{ avaliacao.comentario }}</p>
+        {% if user == avaliacao.utilizador %}
+          <div class="acoes-comentario">
+            <a href="{% url 'editar_avaliacao_api' avaliacao.id %}" class="editar-link">Editar</a>
+            <form method="POST" action="{% url 'remover_avaliacao_api' avaliacao.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="remover-link" onclick="return confirm('Tens a certeza que queres remover este comentário?')">Remover</button>
+            </form>
+          </div>
+        {% endif %}
+
       </div>
     {% endfor %}
-  {% elif avaliacoes_bd %}
+    {% elif avaliacoes_bd %}
     <p>{{ avaliacoes_bd|length }} comentário(s)</p>
     {% for avaliacao in avaliacoes_bd %}
       <div class="comentario">
@@ -136,36 +159,27 @@
             <img src="{% static 'imagens/perfil_default.png' %}" alt="Foto padrão">
           {% endif %}
           <div>
-            <strong>{{ avaliacao.utilizador.nome }}</strong>
+            <strong>{{ avaliacao.utilizador.nome }}</strong><br>
+            <span class="data">{{ avaliacao.data|date:"d \d\e F \d\e Y \à\s H:i" }}</span>
           </div>
         </div>
-        <p class="avaliacao-nota">⭐ {{ avaliacao.avaliacao}}</p>
+        <p class="avaliacao-nota">⭐ {{ avaliacao.avaliacao|floatformat:"1" }}</p>
         <p class="texto">{{ avaliacao.comentario }}</p>
+        {% if user == avaliacao.utilizador %}
+          <div class="acoes-comentario">
+            <a href="{% url 'editar_avaliacao' avaliacao.id %}" class="editar-link">Editar</a>
+            <form method="POST" action="{% url 'remover_avaliacao' avaliacao.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="remover-link" onclick="return confirm('Tens a certeza que queres remover este comentário?')">Remover</button>
+            </form>
+          </div>
+        {% endif %}
+
       </div>
     {% endfor %}
-  {% else %}
-    <p>Nenhuma avaliação disponível.</p>
-  {% endif %}
-</div>
-
-<div class="adicionar-comentario">
-  {% if user.is_authenticated %}
-    <h3 onclick="toggleComentarioForm()" style="cursor:pointer;">➕ Comentar livro</h3>
-    <div id="comentario-form" style="display: none; margin-top: 1rem;">
-      <form action="{% if livro.id %}
-                      {% url 'adicionar_comentario' livro_id=livro.id %}
-                    {% else %}
-                      {% url 'comentar_api' google_id=livro.google_id %}
-                    {% endif %}" method="post">
-        {% csrf_token %}
-        <textarea name="comentario" placeholder="Escreve o teu comentário..." required></textarea>
-        <input type="number" name="avaliacao" step="0.1" min="1" max="5" required placeholder="Avaliação (1 a 5)">
-        <button type="submit" class="btn-comentar">Comentar</button>
-      </form>
-    </div>
-  {% else %}
-    <p><a href="{% url 'pagina_login' %}" class="btn-login-comentar">Inicia sessão para comentar</a></p>
-  {% endif %}
+    {% else %}
+      <p>Nenhuma avaliação disponível.</p>
+    {% endif %}
 </div>
 
 <script src="{% static 'Livros/js/scripts.js' %}"></script>

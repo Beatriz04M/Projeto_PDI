@@ -2,20 +2,19 @@ document.addEventListener('DOMContentLoaded', function () {
   setupTagInput('keyword-input', 'keywords-wrapper', 'keywords-hidden');
   initGenreSuggestions();
   initPreviewHandlers();
-  initISBNValidation();
   setupFormValidation();
   setupMensagemTimeout();
 });
 
 function setupMensagemTimeout() {
-  setTimeout(() => {
-    const mensagens = document.querySelector('.mensagens');
-    if (mensagens) {
-      mensagens.style.transition = 'opacity 0.5s ease-out';
-      mensagens.style.opacity = '0';
-      setTimeout(() => mensagens.remove(), 500);
-    }
-  }, 3000);
+  const mensagens = document.querySelectorAll('.alerta');
+  mensagens.forEach(mensagem => {
+    setTimeout(() => {
+      mensagem.style.transition = 'opacity 0.5s ease-out';
+      mensagem.style.opacity = '0';
+      setTimeout(() => mensagem.remove(), 500);
+    }, 3000);
+  });
 }
 
 function setupFormValidation() {
@@ -29,26 +28,22 @@ function setupFormValidation() {
     const ano = document.querySelector("input[name='ano_publicacao']").value;
 
     const currentYear = new Date().getFullYear();
-    const numberRegex = /\d/;
     const onlyNumberRegex = /^\d+$/;
+    const autorRegex = /^[A-Za-zÀ-ÿ\s.]+$/;
 
-    if (numberRegex.test(titulo)) {
-      alert("O título não pode conter números.");
+    if (!autorRegex.test(autores)) {
+      alert("O nome do autor só pode conter letras, espaços e pontos.");
       e.preventDefault();
     }
 
-    if (numberRegex.test(autores)) {
-      alert("O nome do autor não pode conter números.");
+    if (!onlyNumberRegex.test(numPag) || numPag < 1 || numPag > 5000) {
+      alert("Número de páginas inválido. Deve ser entre 1 e 5000.");
       e.preventDefault();
     }
 
-    if (numPag <= 0 || !onlyNumberRegex.test(numPag)) {
-      alert("Número de páginas inválido.");
-      e.preventDefault();
-    }
 
-    if (ano && (ano <= 0 || ano > currentYear)) {
-      alert(`Ano de publicação inválido. Deve ser entre 1 e ${currentYear}.`);
+    if (ano && (ano <= 1000 || ano > currentYear)) {
+      alert(`Ano de publicação inválido. Deve ser entre 1000 e ${currentYear}.`);
       e.preventDefault();
     }
   });
@@ -64,14 +59,12 @@ function setupTagInput(inputId, wrapperId, hiddenId) {
   let tags = [];
 
   function updateHiddenInputs() {
-    // Remove todas as entradas anteriores geradas dinamicamente
     wrapper.querySelectorAll(`input[data-tag-generated="true"]`).forEach(el => el.remove());
 
-    // Criar inputs hidden separados para cada tag
     tags.forEach(tag => {
       const inputEl = document.createElement('input');
       inputEl.type = 'hidden';
-      inputEl.name = hiddenInput.name; // Deve estar com "[]" no HTML
+      inputEl.name = hiddenInput.name;
       inputEl.value = tag;
       inputEl.setAttribute("data-tag-generated", "true");
       wrapper.appendChild(inputEl);
@@ -80,7 +73,7 @@ function setupTagInput(inputId, wrapperId, hiddenId) {
 
   function updatePlaceholder() {
     input.placeholder = tags.length > 0 ? '' :
-      (inputId === 'autor-input' ? 'Autores (ex: João, Maria)' : 'Palavras-chave (ex: mistério, futebol)');
+      (inputId === 'autor-input' ? 'Autores' : 'Palavras-chave (ex: mistério, futebol)');
   }
 
   function createTag(text) {
@@ -109,7 +102,6 @@ function setupTagInput(inputId, wrapperId, hiddenId) {
     updatePlaceholder();
   }
 
-  // Criar tag ao pressionar vírgula ou Enter
   input.addEventListener('keydown', function (e) {
     if (e.key === ',' || e.key === 'Enter') {
       e.preventDefault();
@@ -118,36 +110,17 @@ function setupTagInput(inputId, wrapperId, hiddenId) {
     }
   });
 
-  // Restaurar tags antigas (após erro de formulário, por exemplo)
   if (hiddenInput.value) {
     tags = hiddenInput.value.split(',').map(t => t.trim()).filter(Boolean);
     tags.forEach(createTag);
   }
 
-  // Incluir valor não confirmado no submit
   document.querySelector('form').addEventListener('submit', function () {
     const pending = input.value.trim();
     if (pending && !tags.includes(pending)) {
       createTag(pending);
     }
     updateHiddenInputs();
-  });
-}
-
-function initISBNValidation() {
-  const isbnInput = document.getElementById("isbn");
-  const erroBox = document.getElementById("erro-isbn");
-
-  if (!isbnInput || !erroBox) return;
-
-  isbnInput.addEventListener("input", function () {
-    const valor = isbnInput.value.replace(/[-\\s]/g, "");
-    if (!/^\\d{10}(\\d{3})?$/.test(valor)) {
-      erroBox.textContent = "Formato inválido de ISBN. Use 10 ou 13 dígitos.";
-      erroBox.style.color = "red";
-    } else {
-      erroBox.textContent = "";
-    }
   });
 }
 
@@ -212,30 +185,37 @@ function initGenreSuggestions() {
     }
   });
 
-  function addGenreTag(genre) {
-    if (!selectedGenres.includes(genre)) {
-      selectedGenres.push(genre);
-      const tag = document.createElement("div");
-      tag.className = "tag";
-      tag.textContent = genre;
+function addGenreTag(genre) {
+  if (!selectedGenres.includes(genre)) {
+    selectedGenres.push(genre);
 
-      const removeTag = document.createElement("span");
-      removeTag.className = "remove-tag";
-      removeTag.textContent = "x";
-      removeTag.onclick = () => removeGenreTag(genre, tag);
-      tag.appendChild(removeTag);
+    const tag = document.createElement("div");
+    tag.className = "tag";
+    tag.textContent = genre;
 
-      genreWrapper.appendChild(tag);
-      genreInput.value = "";
-      genreSuggestions.innerHTML = "";
-      genreSuggestions.style.display = "none";
-    }
+    const removeTag = document.createElement("span");
+    removeTag.className = "remove-tag";
+    removeTag.textContent = "x";
+    removeTag.onclick = () => removeGenreTag(genre, tag);
+    tag.appendChild(removeTag);
+
+    genreWrapper.insertBefore(tag, genreInput);
+    genreInput.value = "";
+    genreSuggestions.innerHTML = "";
+    genreSuggestions.style.display = "none";
+
+    genreInput.placeholder = "";
   }
+}
 
   function removeGenreTag(genre, tag) {
     selectedGenres = selectedGenres.filter(item => item !== genre);
     genreWrapper.removeChild(tag);
     filterGenreSuggestions();
+
+    if (selectedGenres.length === 0) {
+      genreInput.placeholder = "Géneros (ex: Romance, Aventura)";
+    }
   }
 
   function filterGenreSuggestions() {
@@ -273,3 +253,71 @@ function toggleAdicionarDropdown() {
   const dropdown = document.getElementById("dropdown-adicionar-conteudo");
   dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
 }
+
+document.addEventListener("click", function (e) {
+  const dropdown = document.getElementById("dropdown-adicionar-conteudo");
+  const botaoDropdown = document.querySelector(".btn-adicionar-livro");
+
+  if (dropdown && !dropdown.contains(e.target) && !botaoDropdown.contains(e.target)) {
+    dropdown.style.display = "none";
+  }
+
+  const formComentario = document.getElementById("comentario-form");
+  const botaoComentario = document.querySelector(".btn-toggle-comentario");
+
+  if (formComentario && !formComentario.contains(e.target) && !botaoComentario.contains(e.target)) {
+    formComentario.style.display = "none";
+  }
+});
+
+function fecharDropdown() {
+  const dropdown = document.getElementById("dropdown-adicionar-conteudo");
+  if (dropdown) {
+    dropdown.style.display = "none";
+  }
+}
+
+function fecharComentarioForm() {
+  const form = document.getElementById("comentario-form");
+  if (form) {
+    form.style.display = "none";
+  }
+}
+
+function validarISBNInput() {
+  const isbnField = document.getElementById("isbn");
+  const erroDiv = document.getElementById("erro-isbn");
+  const raw = isbnField.value;
+  const digitsOnly = raw.replace(/[-\s]/g, "");
+
+  if (!/^[\d\s-]+$/.test(raw)) {
+    erroDiv.textContent = "O ISBN só pode conter números, espaços e hífens.";
+    return false;
+  }
+
+  if (!(digitsOnly.length === 10 || digitsOnly.length === 13)) {
+    erroDiv.textContent = "O ISBN deve ter exatamente 10 ou 13 dígitos.";
+    return false;
+  }
+
+  erroDiv.textContent = "";
+  return true;
+}
+
+  function validarFormularioLivro() {
+    const tagsGenero = document.querySelectorAll('#genre-tag-wrapper .tag');
+    const erroGenero = document.getElementById('erro-genero');
+
+    if (tagsGenero.length === 0) {
+      erroGenero.textContent = 'Por favor, adicione pelo menos um género.';
+      
+      setTimeout(() => {
+        erroGenero.textContent = '';
+      }, 3000);
+
+      return false; 
+    }
+
+    erroGenero.textContent = ''; 
+    return true;
+  }

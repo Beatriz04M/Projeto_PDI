@@ -10,6 +10,7 @@ urlpatterns = [
     path('biblioteca/editar_estante/<int:estante_id>/', views.editar_estante, name='editar_estante'),
     path('biblioteca/eliminar_estante/<int:estante_id>/', views.eliminar_estante, name='eliminar_estante'),
     path('biblioteca/estante/<int:estante_id>/mudar_cor/', views.mudar_cor_estante, name='mudar_cor_estante'),
-    path('biblioteca/estante/<int:estante_id>/', views.pagina_estante, name='livros_da_estante'),
+    path('biblioteca/estante/<int:estante_id>/', views.pagina_estante, name='pagina_estante'),
     path('biblioteca/estante/<int:estante_id>/adicionar/', views.adicionar_livro_aestante, name='adicionar_livro_aestante'),
+    path('estante/remover/', views.remover_livro_estante, name='remover_livro_estante'),
 ]

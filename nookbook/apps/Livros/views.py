@@ -1,27 +1,17 @@
 from .api import buscar_livros, extrair_dados_livros  
-import re
-from .models import Livro
+import re, random, requests, bleach
 from googletrans import Translator
-import requests
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from nookbook.apps.Livros.models import Livro, Avaliacao, Generos, PalavraChave, AvaliacaoAPI
-from nookbook.apps.Biblioteca.models import Biblioteca, Estante
+from .models import Livro, Avaliacao, PalavraChave, AvaliacaoAPI, Leitura
+from nookbook.apps.Biblioteca.models import Biblioteca, Estante, LeituraDiaria, ProgressoLeitura
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.db.models import Q, Avg
 from datetime import date
-import random
-import requests
 from django.core.files.base import ContentFile
-from .api import buscar_livros, extrair_dados_livros
-from nookbook.apps.Livros.models import Livro
-from django.shortcuts import render
-import random
-from .models import AvaliacaoAPI
 from decimal import Decimal
-from django.db.models import Avg
 
-
+# Página Inicial do site
 def pagina_inicial(request):
     livros_validos = []
     vistos = set()
@@ -47,14 +37,13 @@ def pagina_inicial(request):
                         break
         tentativas += 1
 
-    # Se não conseguir 13, preencher com livros da base de dados
     if len(livros_validos) < 13:
         faltam = 13 - len(livros_validos)
         livros_bd = list(Livro.objects.exclude(google_id__in=vistos))
         random.shuffle(livros_bd)
         for livro_obj in livros_bd[:faltam]:
             livros_validos.append({
-                'google_id': '',  # pode ser vazio se for local
+                'google_id': '',  
                 'titulo': livro_obj.titulo,
                 'capa': livro_obj.capa.url if livro_obj.capa else '/static/imagens/capa_default.png'
             })
@@ -66,8 +55,11 @@ def pagina_inicial(request):
     livros_esquerda = livros_flutuantes[:6]
     livros_direita = livros_flutuantes[6:]
 
-    todos_livros = list(Livro.objects.all())
-    livros_recomendados = random.sample(todos_livros, 6) if len(todos_livros) >= 6 else todos_livros
+    livros_recomendados_qs = Livro.objects.annotate(
+        media_avaliacoes=Avg('avaliacoes__avaliacao')
+    )
+    livros_recomendados = random.sample(list(livros_recomendados_qs), 6) if livros_recomendados_qs.count() >= 6 else list(livros_recomendados_qs)
+
 
     return render(request, "index.html", {
         "livro_destaque": livro_destaque,
@@ -76,7 +68,7 @@ def pagina_inicial(request):
         "livros_recomendados": livros_recomendados
     })
 
-
+#Secção de pesquisa de livros
 def pesquisar_livros(request):
     query = request.GET.get('q', '').strip()
     livros_api = []
@@ -94,20 +86,19 @@ def pesquisar_livros(request):
             return 'palavra'
 
     if query:
-        # --- Pesquisa na Base de Dados ---
         livros_bd = Livro.objects.filter(
             Q(titulo__icontains=query) |
             Q(autor__icontains=query) |
             Q(sinopse__icontains=query)
+        ).annotate(
+            media_avaliacoes=Avg('avaliacoes__avaliacao')
         ).distinct()
 
-        # --- Pesquisa na API ---
         filtro = identificar_filtro(query)
         dados_api = buscar_livros(filtro=filtro, valor=query)
         if dados_api:
             livros_api_raw = extrair_dados_livros(dados_api, traduzir=True)
 
-            # ---- Eliminar livros da API que já existem na BD ----
             titulos_bd = set(livro.titulo.lower() for livro in livros_bd)
 
             livros_api = []
@@ -121,6 +112,7 @@ def pesquisar_livros(request):
         "livros_bd": livros_bd,
         "livros_api": livros_api
     })
+
 
 def importar_dados_livro_api(google_id):
     resultado = buscar_livros(filtro="id", valor=google_id)
@@ -140,22 +132,56 @@ def validar_nota(valor):
 def adicionar_livro_a_estante(utilizador, livro, estante_id):
     if estante_id:
         estante = get_object_or_404(Estante, id=estante_id, utilizador=utilizador)
+
         if Biblioteca.objects.filter(utilizador=utilizador, livro=livro, estante_customizada=estante).exists():
             return False, f"📚 Este livro já está na estante '{estante.nome}'."
+
         Biblioteca.objects.create(utilizador=utilizador, livro=livro, estante_customizada=estante)
+
+        nome = estante.nome.strip().lower()
+        estado_leitura = None
+
+        if 'a ler' in nome:
+            estado_leitura = 'a_ler'
+        elif 'lido' in nome:
+            estado_leitura = 'lido'
+        elif 'quero' in nome:
+            estado_leitura = 'quero_ler'
+        elif 'abandonado' in nome:
+            estado_leitura = 'abandonado'
+
+        if estado_leitura:
+            leitura, criada = Leitura.objects.get_or_create(
+                utilizador=utilizador,
+                livro=livro,
+                defaults={'estado': estado_leitura}
+            )
+            if not criada and leitura.estado != estado_leitura:
+                leitura.estado = estado_leitura
+                leitura.save()
+
         return True, f"✅ Livro guardado na estante '{estante.nome}'!"
-    
-    # Adicionar à biblioteca sem estante personalizada
+
     if Biblioteca.objects.filter(utilizador=utilizador, livro=livro, estante_customizada__isnull=True).exists():
         return False, "📚 Este livro já está guardado na tua biblioteca."
-    
+
     Biblioteca.objects.create(utilizador=utilizador, livro=livro)
-    return True, "✅ Livro guardado na tua biblioteca."
+
+    leitura, criada = Leitura.objects.get_or_create(
+        utilizador=utilizador,
+        livro=livro,
+        defaults={'estado': 'quero_ler'}
+    )
+    if not criada and leitura.estado != 'quero_ler':
+        leitura.estado = 'quero_ler'
+        leitura.save()
+    return True, "Livro guardado na tua biblioteca."
 
 
 def limpar_texto_descricao(texto):
-    texto_limpo = re.sub(r"<[^>]*>", "", texto)  
-    return texto_limpo.strip()
+    tags_permitidas = ['p', 'br', 'i', 'strong', 'em']
+    return bleach.clean(texto, tags=tags_permitidas, strip=True)
+
 
 def detalhe_livro_api(request, google_id):
     url = f"https://www.googleapis.com/books/v1/volumes/{google_id}"
@@ -177,22 +203,23 @@ def detalhe_livro_api(request, google_id):
     nota = info.get("averageRating", None)
     categorias_api = info.get("categories", [])
 
-    # Traduz a descrição
     try:
         descricao = tradutor.translate(descricao, dest="pt").text
     except:
         pass
 
-    # Traduz categorias conhecidas
-    mapa_generos = {
-        "Fiction": "Ficção", "Romance": "Romance", "Mystery": "Suspense",
-        "Thriller": "Suspense", "Horror": "Terror", "Fantasy": "Fantasia",
-        "Biography": "Biografia", "History": "História", "Science": "Ciência",
-        "Classic": "Clássico", "Adventure": "Aventura", "Drama": "Drama"
-    }
-    categorias_traduzidas = [mapa_generos.get(cat, cat) for cat in categorias_api]
+    categorias_api = info.get("categories", [])
+    categorias_traduzidas = set()
 
-    # Estrutura do livro como dicionário
+    for categoria in categorias_api:
+        try:
+            traducao = tradutor.translate(categoria, dest="pt").text
+            categorias_traduzidas.add(traducao.strip())
+        except:
+            categorias_traduzidas.add(categoria.strip())
+
+    categorias_traduzidas = list(categorias_traduzidas)
+
     livro = {
         "google_id": google_id,
         "titulo": titulo,
@@ -203,13 +230,11 @@ def detalhe_livro_api(request, google_id):
         "categorias": categorias_traduzidas,
     }
 
-    # Estantes do utilizador autenticado
     estantes = []
     if request.user.is_authenticated:
         estantes = Estante.objects.filter(utilizador=request.user)
 
-    # Comentários e média para livros da API
-    avaliacoes_api = AvaliacaoAPI.objects.filter(google_id=google_id).order_by("-id")
+    avaliacoes_api = AvaliacaoAPI.objects.filter(google_id=google_id).order_by("-data")
     media_api = avaliacoes_api.aggregate(media=Avg('avaliacao'))['media'] or 0
 
     return render(request, "detalhe_livro.html", {
@@ -220,9 +245,11 @@ def detalhe_livro_api(request, google_id):
         "estantes": estantes
     })
 
+
 def detalhe_livro(request, livro_id):
     livro = get_object_or_404(Livro, id=livro_id)
     avaliacoes_bd = livro.avaliacoes.select_related('utilizador').all()
+    avaliacoes_bd = livro.avaliacoes.select_related('utilizador').order_by('-data')
 
     estantes = []
     if request.user.is_authenticated:
@@ -235,6 +262,7 @@ def detalhe_livro(request, livro_id):
         "estantes": estantes
     })
 
+
 @login_required
 def adicionar_comentario(request, livro_id):
     livro = get_object_or_404(Livro, id=livro_id)
@@ -245,8 +273,8 @@ def adicionar_comentario(request, livro_id):
 
         if comentario_texto and nota:
             try:
-                nota_decimal = round(float(nota), 1)
-                if not (1.0 <= nota_decimal <= 5.0):
+                nota_avaliacao = round(float(nota), 1)
+                if not (1.0 <= nota_avaliacao <= 5.0):
                     raise ValueError("Fora do intervalo permitido.")
 
                 avaliacao_existente = Avaliacao.objects.filter(utilizador=request.user, livro=livro).first()
@@ -257,12 +285,12 @@ def adicionar_comentario(request, livro_id):
                     Avaliacao.objects.create(
                         utilizador=request.user,
                         livro=livro,
-                        avaliacao=nota_decimal,
+                        avaliacao=nota_avaliacao,
                         comentario=comentario_texto
                     )
                     messages.success(request, "Comentário adicionado com sucesso! 🎉")
             except ValueError:
-                messages.error(request, "A nota deve ser um número entre 1.0 e 5.0.")
+                messages.error(request, "A nota deve ser um número entre 1 e 5.")
         else:
             messages.error(request, "Preenche todos os campos corretamente.")
 
@@ -276,7 +304,7 @@ def comentar_api(request, google_id):
 
         if texto and nota:
             try:
-                nota_decimal = Decimal(nota)
+                nota_avaliacao = Decimal(nota)
             except:
                 messages.error(request, "Valor de avaliação inválido.")
                 return redirect("detalhe_livro_api", google_id=google_id)
@@ -289,7 +317,7 @@ def comentar_api(request, google_id):
                     utilizador=request.user,
                     google_id=google_id,
                     comentario=texto,
-                    avaliacao=nota_decimal
+                    avaliacao=nota_avaliacao
                 )
                 messages.success(request, "Comentário adicionado com sucesso! 🎉")
         else:
@@ -297,6 +325,128 @@ def comentar_api(request, google_id):
 
         return redirect("detalhe_livro_api", google_id=google_id)
      
+@login_required
+def editar_avaliacao(request, avaliacao_id):
+    avaliacao = get_object_or_404(Avaliacao, id=avaliacao_id, utilizador=request.user)
+    if request.method == 'POST':
+        avaliacao.comentario = request.POST.get('comentario', '').strip()
+        avaliacao.avaliacao = Decimal(request.POST.get('avaliacao'))
+        avaliacao.save()
+        messages.success(request, "Comentário atualizado com sucesso.")
+        return redirect('detalhe_livro', livro_id=avaliacao.livro.id)
+    return render(request, 'avaliacao_editar.html', {'avaliacao': avaliacao})
+
+
+@login_required
+def remover_avaliacao(request, avaliacao_id):
+    avaliacao = get_object_or_404(Avaliacao, id=avaliacao_id, utilizador=request.user)
+    livro_id = avaliacao.livro.id
+    avaliacao.delete()
+    messages.success(request, "Comentário removido.")
+    return redirect('detalhe_livro', livro_id=livro_id)
+
+@login_required
+def editar_avaliacao_api(request, avaliacao_id):
+    avaliacao = get_object_or_404(AvaliacaoAPI, id=avaliacao_id, utilizador=request.user)
+    if request.method == 'POST':
+        avaliacao.comentario = request.POST.get('comentario', '').strip()
+        avaliacao.avaliacao = Decimal(request.POST.get('avaliacao'))
+        avaliacao.save()
+        messages.success(request, "Comentário atualizado com sucesso.")
+        return redirect('detalhe_livro_api', google_id=avaliacao.google_id)
+    return render(request, 'avaliacao_editar_api.html', {'avaliacao': avaliacao})
+
+
+@login_required
+def remover_avaliacao_api(request, avaliacao_id):
+    avaliacao = get_object_or_404(AvaliacaoAPI, id=avaliacao_id, utilizador=request.user)
+    google_id = avaliacao.google_id
+    avaliacao.delete()
+    messages.success(request, "Comentário removido.")
+    return redirect('detalhe_livro_api', google_id=google_id)
+     
+
+@login_required
+def guardar_livro_api(request, google_id):
+
+    dados = importar_dados_livro_api(google_id)
+    if not dados:
+        messages.error(request, "Não foi possível importar o livro.")
+        return redirect('detalhe_livro_api', google_id=google_id)
+
+    livro = Livro.objects.filter(google_id=google_id).first()
+    estante_id = request.GET.get('estante_id') or request.POST.get('estante_id')
+
+    if livro:
+        sucesso, msg = adicionar_livro_a_estante(request.user, livro, estante_id)
+        messages.success(request, msg if sucesso else f"📚 {msg}")
+        return redirect('detalhe_livro_api', google_id=google_id)
+
+    livro = Livro.objects.create(
+        titulo=dados['titulo'],
+        autor=dados['autor'],
+        sinopse=dados.get('descricao', 'Sem sinopse.'),
+        num_pag=dados.get('num_paginas') or 100,
+        ano_publicacao=dados.get('ano'),
+        google_id=google_id
+    )
+
+    url_capa = dados.get('capa')
+    if url_capa:
+        r = requests.get(url_capa)
+        if r.status_code == 200:
+            nome_arquivo = f"{livro.titulo}.jpg"
+            livro.capa.save(nome_arquivo, ContentFile(r.content), save=True)
+
+    sucesso, msg = adicionar_livro_a_estante(request.user, livro, estante_id)
+    messages.success(request, msg if sucesso else f"📚 {msg}")
+
+    return redirect('detalhe_livro_api', google_id=google_id)
+
+
+@login_required
+def criar_estante_e_adicionar_api(request, google_id):
+    if request.method == "POST":
+        nome = request.POST.get("nome")
+        cor = request.POST.get("cor") or "#f5f5f5"  
+
+        if not nome:
+            messages.error(request, "Nome da estante em falta.")
+            return redirect('detalhe_livro_api', google_id=google_id)
+
+        if Estante.objects.filter(utilizador=request.user, nome__iexact=nome).exists():
+            messages.error(request, "Já tens uma estante com esse nome.")
+            return redirect('detalhe_livro_api', google_id=google_id)
+
+        estante = Estante.objects.create(utilizador=request.user, nome=nome, cor=cor)  
+        return redirect(f"/livro/api/{google_id}/guardar/?estante_id={estante.id}")
+
+    messages.error(request, "Não foi possível criar a estante.")
+    return redirect('detalhe_livro_api', google_id=google_id)
+
+
+@login_required
+def criar_estante_e_adicionar_bd(request):
+    if request.method == "POST":
+        nome = request.POST.get("nome")
+        cor = request.POST.get("cor") or "#f5f5f5"  
+        livro_id = request.POST.get("livro_id")
+
+        if not nome or not livro_id:
+            messages.error(request, "Nome da estante ou ID do livro em falta.")
+            return redirect('detalhe_livro', livro_id=livro_id)
+
+        if Estante.objects.filter(utilizador=request.user, nome__iexact=nome).exists():
+            messages.error(request, "Já tens uma estante com esse nome.")
+            return redirect('detalhe_livro', livro_id=livro_id)
+
+        estante = Estante.objects.create(utilizador=request.user, nome=nome, cor=cor)  
+        return redirect(f"/livro/{livro_id}/?estante_id={estante.id}")
+
+    messages.error(request, "Não foi possível criar a estante.")
+    return redirect('detalhe_livro')
+
+#Página de adicionar livro
 @login_required
 def adicionar_livro(request):
     if request.method == 'POST':
@@ -312,7 +462,6 @@ def adicionar_livro(request):
             'capa': request.FILES.get('capa')
         }
 
-        # Validação dos campos obrigatórios
         if not dados['titulo'] or not dados['autor'] or not dados['sinopse'] or not dados['num_pag']:
             messages.error(request, "Preenche todos os campos obrigatórios.")
             return render(request, 'adicionar_livro.html', {
@@ -320,7 +469,6 @@ def adicionar_livro(request):
                 'form_data': request.POST
             })
 
-        # Validar número de páginas
         try:
             dados['num_pag'] = int(dados['num_pag'])
             if dados['num_pag'] <= 0:
@@ -332,7 +480,6 @@ def adicionar_livro(request):
                 'form_data': request.POST
             })
 
-        # Validar ano de publicação
         try:
             dados['ano_publicacao'] = int(dados['ano_publicacao']) if dados['ano_publicacao'] else None
         except ValueError:
@@ -342,9 +489,17 @@ def adicionar_livro(request):
                 'form_data': request.POST
             })
 
-        # Verificar ISBN duplicado
-        if dados['isbn'] and Livro.objects.filter(isbn=dados['isbn']).exists():
-            messages.error(request, "Já existe um livro com esse ISBN.")
+        existe_por_titulo_autor = Livro.objects.filter(
+            titulo__iexact=dados['titulo'],
+            autor__iexact=dados['autor']
+        ).exists()
+
+        existe_por_isbn = False
+        if dados['isbn']:
+            existe_por_isbn = Livro.objects.filter(isbn=dados['isbn']).exists()
+
+        if existe_por_titulo_autor or existe_por_isbn:
+            messages.error(request, "Este livro já existe no sistema.")
             return render(request, 'adicionar_livro.html', {
                 'now': date.today(),
                 'form_data': request.POST
@@ -366,107 +521,50 @@ def adicionar_livro(request):
                     tag, _ = PalavraChave.objects.get_or_create(nome=palavra.strip())
                     livro.palavra_chave.add(tag)
 
-            messages.success(request, "📚 Livro adicionado com sucesso.")
+            messages.success(request, "Livro adicionado com sucesso.")
             return redirect('inicio')
 
         except Exception as e:
-            print("❌ Erro inesperado ao guardar livro:", e)
             messages.error(request, f"Erro inesperado: {e}")
             return render(request, 'adicionar_livro.html', {
                 'now': date.today(),
                 'form_data': request.POST
             })
 
-    # GET request
     return render(request, 'adicionar_livro.html', {
         'now': date.today(),
         'form_data': {}
     })
 
+@login_required
+def adicionar_anotacao(request, leitura_id):
+    leitura = get_object_or_404(Leitura, id=leitura_id, utilizador=request.user)
+
+    if request.method == 'POST':
+        anotacao = request.POST.get('anotacoes', '').strip()
+        leitura.anotacoes = anotacao
+        leitura.save()
+        messages.success(request, "Anotação guardada.")
+        return redirect('inicio')  
+
+    return render(request, 'anotacoes.html', {'leitura': leitura})
 
 @login_required
-def guardar_livro_api(request, google_id):
+def leitura_detalhes(request, leitura_id):
+    leitura = get_object_or_404(Leitura, id=leitura_id, utilizador=request.user)
+    
+    progresso = ProgressoLeitura.objects.filter(utilizador=request.user, livro=leitura.livro).first()
+    historico = LeituraDiaria.objects.filter(utilizador=request.user, livro=leitura.livro).order_by('-data')
 
-    dados = importar_dados_livro_api(google_id)
-    if not dados:
-        messages.error(request, "❌ Não foi possível importar o livro.")
-        return redirect('detalhe_livro_api', google_id=google_id)
+    return render(request, 'leitura_detalhes.html', {
+        'leitura': leitura,
+        'progresso': progresso,
+        'historico': historico
+    })
 
-    livro = Livro.objects.filter(google_id=google_id).first()
-    estante_id = request.GET.get('estante_id') or request.POST.get('estante_id')
-
-    # Já existe na base de dados
-    if livro:
-        sucesso, msg = adicionar_livro_a_estante(request.user, livro, estante_id)
-        messages.success(request, msg if sucesso else f"📚 {msg}")
-        return redirect('detalhe_livro_api', google_id=google_id)
-
-    # Criar novo livro
-    livro = Livro.objects.create(
-        titulo=dados['titulo'],
-        autor=dados['autor'],
-        sinopse=dados.get('descricao', 'Sem sinopse.'),
-        num_pag=dados.get('num_paginas') or 100,
-        ano_publicacao=dados.get('ano'),
-        google_id=google_id
+def iniciar_ou_ver_leitura(request, livro_id):
+    leitura, _ = Leitura.objects.get_or_create(
+        utilizador=request.user,
+        livro_id=livro_id,
     )
-
-    # Guardar imagem da capa (se existir)
-    url_capa = dados.get('capa')
-    if url_capa:
-        try:
-            r = requests.get(url_capa)
-            if r.status_code == 200:
-                nome_arquivo = f"{livro.titulo}.jpg"
-                livro.capa.save(nome_arquivo, ContentFile(r.content), save=True)
-        except Exception as e:
-            print(f"⚠️ Erro ao guardar a capa: {e}")
-
-    # Associar à estante (se aplicável)
-    sucesso, msg = adicionar_livro_a_estante(request.user, livro, estante_id)
-    messages.success(request, msg if sucesso else f"📚 {msg}")
-
-    return redirect('detalhe_livro_api', google_id=google_id)
-
-
-@login_required
-def criar_estante_e_adicionar_api(request, google_id):
-    if request.method == "POST":
-        nome = request.POST.get("nome")
-        cor = request.POST.get("cor") or "#f5f5f5"  
-
-        if not nome:
-            messages.error(request, "❌ Nome da estante em falta.")
-            return redirect('detalhe_livro_api', google_id=google_id)
-
-        if Estante.objects.filter(utilizador=request.user, nome__iexact=nome).exists():
-            messages.error(request, "⚠️ Já tens uma estante com esse nome.")
-            return redirect('detalhe_livro_api', google_id=google_id)
-
-        estante = Estante.objects.create(utilizador=request.user, nome=nome, cor=cor)  # ← ALTERADO
-        return redirect(f"/livro/api/{google_id}/guardar/?estante_id={estante.id}")
-
-    messages.error(request, "❌ Não foi possível criar a estante.")
-    return redirect('detalhe_livro_api', google_id=google_id)
-
-@login_required
-def criar_estante_e_adicionar_bd(request):
-    if request.method == "POST":
-        nome = request.POST.get("nome")
-        cor = request.POST.get("cor") or "#f5f5f5"  
-        livro_id = request.POST.get("livro_id")
-
-        if not nome or not livro_id:
-            messages.error(request, "❌ Nome da estante ou ID do livro em falta.")
-            return redirect('detalhe_livro', livro_id=livro_id)
-
-        if Estante.objects.filter(utilizador=request.user, nome__iexact=nome).exists():
-            messages.error(request, "⚠️ Já tens uma estante com esse nome.")
-            return redirect('detalhe_livro', livro_id=livro_id)
-
-        estante = Estante.objects.create(utilizador=request.user, nome=nome, cor=cor)  # ← ALTERADO
-        return redirect(f"/livro/{livro_id}/?estante_id={estante.id}")
-
-    messages.error(request, "❌ Não foi possível criar a estante.")
-    return redirect('detalhe_livro')
-
+    return redirect('leitura_detalhes', leitura_id=leitura.id)

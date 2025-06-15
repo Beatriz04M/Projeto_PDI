@@ -19,13 +19,11 @@
       <a href="{% url 'inicio' %}">Home</a>
       <a href="{% url 'pagina_biblioteca' %}">Biblioteca</a>
       <a href="{% url 'adicionar_livro' %}">Adicionar Livro</a>
-      <a href="{% url 'pagina_inicial' %}">Desafios</a>
-      <a href="{% url 'pagina_inicial' %}">Perfil</a>
+      <a href="{% url 'perfil' %}">Perfil</a>
     {% else %}
       <a href="{% url 'pagina_login' %}">Home</a>
       <a href="{% url 'pagina_login' %}">Biblioteca</a>
       <a href="{% url 'pagina_login' %}">Adicionar Livro</a>
-      <a href="{% url 'pagina_login' %}">Desafios</a>
       <a href="{% url 'pagina_login' %}">Perfil</a>
 
     {% endif %}
@@ -122,13 +120,6 @@
       {% endfor %}
     </div>
   </div>
-
-  <script>
-    function toggleMenu() {
-      const menu = document.getElementById("menu");
-      menu.classList.toggle("show");
-    }
-  </script>
-  
+  <script src="{% static 'Livros/js/index.js' %}"></script>
 </body>
 </html>

@@ -25,6 +25,7 @@ urlpatterns = [
     path('auth/', include('nookbook.apps.Utilizadores.urls')),
     path('biblio/', include('nookbook.apps.Biblioteca.urls')),
     path('inicio/', include('nookbook.apps.Main.urls')), 
+    path('desafios/', include('nookbook.apps.Desafios.urls'))
 ] 
 
 if settings.DEBUG:

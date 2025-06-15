@@ -1,18 +1,14 @@
-/* ======================== */
-/* Página principal */
 .pagina-leitura {
   padding: 20px;
   background-color: #fffde7;
 }
 
-/* ======================== */
-/* Zona: Os teus livros */
 .zona-leitura {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 30px;
   flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 50px;
   opacity: 0;
   transition: opacity 0.2s ease;
 }
@@ -22,17 +18,17 @@ body.js-carregado .zona-leitura {
 }
 
 .carousel-container {
-  position: relative;
-  width: 100%;
+  flex: 1 1 400px;
+  min-width: 300px;
   max-width: 650px;
   overflow: hidden;
   margin-bottom: 20px;
+  position: relative;
 }
 
 .carousel-track {
   display: flex;
   transition: transform 0.4s ease-in-out;
-  width: 100%;
   visibility: hidden;
 }
 
@@ -41,26 +37,28 @@ body.js-carregado .carousel-track {
 }
 
 .livro-slide {
-  min-width: 100%;
+  flex: 0 0 100%;
   box-sizing: border-box;
   display: flex;
 }
 
 .livro-card-carousel {
   display: flex;
-  align-items: center;
+  align-items: stretch;
+  justify-content: space-between;
   background-color: #fff7dd;
-  padding: 20px 24px;
-  border-radius: 16px;
+  padding: 20px;
   gap: 20px;
-  width: 480px;
+  max-width: 420px;
+  width: 100%;
   height: 170px;
+  border-radius: 16px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   box-sizing: border-box;
 }
 
 .livro-card-carousel img {
-  height: 120px;
+  height: 128px;
   border-radius: 8px;
   object-fit: cover;
   flex-shrink: 0;
@@ -92,25 +90,26 @@ body.js-carregado .carousel-track {
 }
 
 .progress-container {
-  background-color: #eee;
-  border-radius: 10px;
+  background-color: #e0e0e0;
+  border-radius: 8px;
   height: 10px;
   width: 100%;
   overflow: hidden;
+  margin-top: 5px;
 }
 
 .progress-bar {
-  background-color: #4caf50;
   height: 100%;
-  transition: width 0.3s ease-in-out;
+  width: 0%;
+  background-color: #4caf50;
+  transition: width 0.4s ease;
 }
-
 
 .carousel-btn {
   position: absolute;
-  top: 50%;
-  right: 105px;
-  transform: translateY(-50%);
+  top: 42%;
+  right: 170px;
+  z-index: 10;
   background-color: #ffe2b3;
   border: none;
   border-radius: 50%;
@@ -125,19 +124,19 @@ body.js-carregado .carousel-track {
   background-color: #ffc86c;
 }
 
-/* ======================== */
-/* Leitura de hoje (direita) */
+/* Leitura de hoje */
 .leitura-box {
   background-color: #fffef2;
   padding: 10px 28px;
   border-radius: 16px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 40px;
+  gap: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  max-width: 600px;
-  margin-right: 40px;
+  flex: 1 1 300px;
+  min-width: 260px;
+  max-width: 400px;
+  margin-right: 0;
   min-height: 170px;
   position: relative;
 }
@@ -206,7 +205,6 @@ body.js-carregado .carousel-track {
   object-fit: cover;
 }
 
-/* ======================== */
 /* Mensagens */
 .mensagens-flutuante {
   position: relative;
@@ -235,7 +233,6 @@ body.js-carregado .carousel-track {
   100%   { opacity: 0; display: none; }
 }
 
-/* ======================== */
 /* Recomendados */
 .recomendados {
   margin-top: 40px;
@@ -337,17 +334,284 @@ body.js-carregado .carousel-track {
   background-color: #e5a728;
 }
 
-/* ======================== */
-/* Responsivo */
-@media (max-width: 900px) {
-  .zona-leitura {
-    flex-direction: column;
-    flex-wrap: wrap;
+.btn-ver-detalhes {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-weight: bold;
+  padding: 5px 12px;
+  background-color: #fcb6c4;
+  color: #000;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  width: 36%;
+}
+
+.btn-ver-detalhes:hover {
+  background-color: #f998b4;
+}
+
+/* Tablets (≤768px) */
+@media (max-width: 768px) {
+  h2 {
+    margin-left: 50px;
   }
 
-  .carousel-container,
-  .leitura-box {
-    max-width: 100%;
-    flex: 1 1 100%;
+  .zona-leitura {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;     
+    gap: 16px;
+    padding: 0 20px;
+    margin-bottom: 6rem;
   }
+
+  .carousel-container {
+    flex: 1 1 220px;
+    width: 100%;
+    margin-bottom: 0;   
+    position: relative;
+  }
+
+  .carousel-track {
+    display: flex;
+    transition: transform 0.4s ease-in-out;
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .livro-slide {
+    flex: 0 0 100%;
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .livro-card-carousel {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    max-width: 420px;
+    width: 100%;
+    background-color: #fff7dd;
+    border-radius: 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    position: relative;
+  }
+
+  .carousel-btn {
+    position: absolute;
+    top: 41%;
+    right: 50px;
+    z-index: 10;
+    background-color: #ffe2b3;
+    border: none;
+    border-radius: 50%;
+    padding: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .carousel-btn:hover {
+    background-color: #ffc86c;
+  }
+
+  .leitura-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: nowrap;
+    width: 100%;
+    background-color: #fffef2;
+    padding: 0 20px;
+    border-radius: 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 0;
+  }
+
+  .leitura-form {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .leitura-form input {
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    min-width: 100px;
+  }
+
+  .leitura-form button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 20px;
+    background-color: #f0b83c;
+    font-weight: bold;
+    cursor: pointer;
+    color: #222;
+    transition: background-color 0.2s ease;
+  }
+
+  .leitura-form button:hover {
+    background-color: #e5a728;
+  }
+
+  .leitura-conteudo {
+    flex: 1 1 60%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    justify-content: center;
+  }
+
+  .dias-semana {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+  } 
+
+  .capa-lateral-wrapper {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .capa-lateral {
+    height: 110px;
+    width: auto;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .recomendados-scroll {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scroll-snap-type: x mandatory; 
+    margin: 40px 70px;
+  }
+
+  .btn-ver-detalhes {
+    font-size: 14px;
+    width: 31%;
+  }
+}
+
+/* Telemóveis (≤480px) */
+@media (max-width: 480px) {
+  .livro-card-carousel {
+    position: relative;
+    padding: 16px 50px 16px 16px; 
+    background-color: #fff7dd;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .livro-card-carousel .info h3 {
+    font-size: 16px;
+  }
+
+  .livro-card-carousel .info p {
+    font-size: 13px;
+  }
+
+  .progress-container {
+    height: 8px;
+  }
+
+  .leitura-box {
+    padding: 12px;
+  }
+
+  .dias-semana span {
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    font-size: 12px;
+  }
+
+  .recomendados-scroll {
+    overflow-x: auto;
+    padding-bottom: 12px;
+    scrollbar-width: thin;
+    scroll-snap-type: x mandatory; 
+  }
+
+  .recomendados-grid {
+    display: flex;
+    gap: 1.5rem;
+    min-width: fit-content;
+    scroll-snap-type: x mandatory;
+  }
+
+  .livro-card-recomendado {
+    flex: 0 0 auto;
+    scroll-snap-align: start; 
+  }
+
+  .livro-card-recomendado {
+    width: 130px;
+    padding: 10px;
+  }
+
+  .livro-card-recomendado img {
+    width: 110px;
+    height: 170px;
+  }
+
+  .livro-info h3 {
+    font-size: 14px;
+  }
+
+  .livro-info p {
+    font-size: 12px;
+  }
+
+  .btn-adicionar {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .carousel-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+  }
+
+  .carousel-btn {
+    position: absolute;
+    top: 45%;
+    right: 10px;
+    z-index: 10;
+    background-color: #ffe2b3;
+    border: none;
+    border-radius: 50%;
+    padding: 5px;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease;
+  }
+
+  .carousel-btn:hover {
+    background-color: #ffc86c;
+  }
+
+  .btn-ver-detalhes {
+    font-size: 12px;
+    width: 53%;
+  }
+
 }

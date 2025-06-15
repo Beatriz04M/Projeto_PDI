@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'Utilizadores/css/perfil.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="profile-header-new">
+  <div class="profile-image-section">
+    {% if user.foto_perfil %}
+    <img src="{{ user.foto_perfil.url }}" alt="Foto de perfil" class="profile-image">
+    {% else %}
+    <img src="{% static 'imagens/profile_picture.png' %}" alt="Foto de perfil padrão" class="profile-image">
+    {% endif %}
+  </div>
+
+<div class="profile-details">
+  <div class="profile-actions">
+    <h1 class="profile-username">{{ user.username }}</h1>
+    
+    <div class="profile-buttons">
+      <a href="{% url 'editar_perfil' %}" class="btn-edit">Editar Perfil</a>
+      <form method="post" action="{% url 'confirmar_logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn-logout-icon" title="Terminar sessão">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+        </button>
+      </form>
+    </div>
+
+  </div>
+
+  <p class="profile-bio">{{ user.biografia|default:"Sem biografia..." }}</p>
+  <p class="profile-location">{{ user.pais|default:"País desconhecido" }}</p>
+</div>
+</div>
+
+<div class="tabs">
+  <button class="tab" data-tab="desafios">Desafios</button>
+  <button class="tab" data-tab="reviews">Reviews</button>
+</div>
+
+
+<div id="desafios" class="tab-content desafios-section">
+  <div class="desafios-wrapper">
+    <div class="desafios-cards">
+      {% for desafio in desafios %}
+      <div class="desafio-card">
+        <div class="desafio-top {% cycle 'bg-rosa' 'bg-azul' %}">
+          <h4>Desafio</h4>
+          <h3>{{ desafio.titulo }}</h3>
+          {% if desafio.esta_a_participar %}
+          <div class="desafio-contador">
+            {{ desafio.data_inicio|date:"d/m/Y" }} → {{ desafio.data_fim|date:"d/m/Y" }}
+          </div>
+          {% endif %}
+        </div>
+        <div class="desafio-bottom">
+          <span class="participantes">{{ desafio.participantes.count }} participantes</span>
+          <form method="post" action="{% url 'participar_desafio' desafio.id %}" class="form-participar">
+            {% csrf_token %}
+            <button type="submit" class="btn-participar {% if desafio.esta_a_participar %}ativo{% endif %}"
+              data-participando="{% if desafio.esta_a_participar %}true{% else %}false{% endif %}">
+              {% if desafio.esta_a_participar %}A participar{% else %}Participar{% endif %}
+            </button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="desafios-acoes">
+      <a href="{% url 'roda_da_sorte' %}" class="btn-acao">🎡 Roda da Sorte</a>
+      <a href="{% url 'criar_desafio' %}" class="btn-acao">➕ Criar Desafio</a>
+    </div>
+  </div>
+</div>
+
+
+<div id="reviews" class="tab-content">
+  <h2>As tuas Reviews</h2>
+
+  {% if reviews_bd or reviews_api %}
+  <div class="reviews-grid">
+    {% for review in reviews_bd %}
+    <div class="review-card">
+      {% if review.livro.capa %}
+      <img src="{{ review.livro.capa.url }}" alt="Capa de {{ review.livro.titulo }}" class="review-capa">
+      {% else %}
+      <img src="{% static 'imagens/capa_default.png' %}" alt="Capa padrão" class="review-capa">
+      {% endif %}
+      <div class="review-info">
+        <h3>{{ review.livro.titulo }}</h3>
+        <p class="autor">{{ review.livro.autor }}</p>
+        <p class="comentario">{{ review.comentario }}</p>
+        <p class="avaliacao">⭐ {{ review.avaliacao }}/5</p>
+      </div>
+    </div>
+    {% endfor %}
+
+    {% for review in reviews_api %}
+    <div class="review-card">
+      <img src="{{ review.capa_url|default:'/static/imagens/capa_default.png' }}" alt="Capa de {{ review.titulo }}" class="review-capa">
+      <div class="review-info">
+        <h3>{{ review.titulo }}</h3>
+        <p class="autor">{{ review.autor|default:"Autor desconhecido" }}</p>
+        <p class="comentario">{{ review.comentario }}</p>
+        <p class="avaliacao">⭐ {{ review.avaliacao }}/5</p>
+      </div>
+    </div>
+
+    {% endfor %}
+  </div>
+  {% else %}
+  <p>Ainda não escreveste nenhuma review.</p>
+  {% endif %}
+</div>
+</div>
+
+<script src="{% static 'Utilizadores/js/perfil.js' %}"></script>
+{% endblock %}

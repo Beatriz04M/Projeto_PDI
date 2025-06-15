@@ -1,0 +1,172 @@
+{% extends "base.html" %} 
+{% load static %} 
+{% block extra_head %} 
+  <link rel="stylesheet" href="{% static 'Utilizadores/css/editar.css'%}"> 
+{% endblock %} 
+{% block content %} 
+<div class="edit-profile-container"> 
+  <div class="main-content"> 
+    {% if messages %} 
+    <ul class="messages"> 
+      {% for message in messages %} 
+        <li class="{{ message.tags }}">{{ message }}</li> 
+      {% endfor %} 
+    </ul> 
+  {% endif %} 
+ 
+<div class="preferencias-layout"> 
+  <!-- Coluna esquerda: Título e botões --> 
+  <div class="preferencias-menu"> 
+    <h2><a href="{% url 'perfil' %}" class="voltar-seta"><i class="bi bi-chevron-left"></i> Preferências</a></h2> 
+ 
+    <ul class="preferencias-opcoes">  
+      <li><button class="tab-btn active" data-tab="editar">Editar perfil</button></li> 
+      <li><button class="tab-btn" data-tab="gestao">Gestão de conta</button></li> 
+    </ul> 
+  </div> 
+ 
+  <!-- Coluna direita: Conteúdo dinâmico --> 
+  <div class="preferencias-conteudo"> 
+    <!-- Secção: Editar Perfil --> 
+    <div id="tab-editar" class="tab-section active"> 
+      <p class="info-text"> 
+        Mantém os teus dados pessoais privados. As informações que adicionares aqui ficam visíveis para qualquer pessoa que possa ver o teu perfil. 
+      </p> 
+ 
+      <form method="post" enctype="multipart/form-data" action="."> 
+        {% csrf_token %} 
+        <input type="hidden" name="form_action" value="editar_perfil"> 
+ 
+        <div class="form-photo"> 
+          <img id="preview-img"  
+            src="{% if user.foto_perfil %}{{ user.foto_perfil.url }}{% else %}{% static 'imagens/profile_picture.png' %}{% endif %}"  
+            class="avatar-large"> 
+          <label for="foto" class="btn-alterar-foto">Alterar Foto</label> 
+          <input type="file" id="foto" name="foto" accept="image/*" hidden> 
+        </div> 
+ 
+        <label for="nome">Nome de utilizador:</label> 
+        <input type="text" id="nome" name="nome" placeholder="Nome" value="{{ user.username }}" class="form-input" required> 
+ 
+        <label for="biografia">Biografia:</label> 
+        <textarea id="biografia" name="biografia" placeholder="Biografia" class="form-textarea">{{ user.biografia }}</textarea> 
+ 
+        <div class="form-actions"> 
+          <button type="submit" class="btn-guardar">Guardar</button> 
+        </div> 
+      </form> 
+    </div> 
+ 
+    <!-- Secção: Gestão de Conta --> 
+    <div id="tab-gestao" class="tab-section"> 
+      <p class="info-text">Faz alterações às tuas informações pessoais e à tua conta.</p> 
+ 
+      <!-- Alterar Email --> 
+      <form method="post" action="."> 
+        {% csrf_token %} 
+        <input type="hidden" name="form_action" value="email"> 
+        <h3>A tua conta</h3> 
+        <label for="email">E-mail:</label> 
+        <input type="email" name="email" placeholder="Email" value="{{ user.email }}" class="form-input" required> 
+ 
+        <div class="form-actions"> 
+          <button type="submit" class="btn-secundario">Atualizar email</button> 
+        </div> 
+      </form> 
+ 
+      <!-- Alterar Password --> 
+      <form method="post" action="."> 
+        {% csrf_token %} 
+        <input type="hidden" name="form_action" value="password"> 
+ 
+        <label for="password">Nova password:</label> 
+        <input type="password" name="password" placeholder="Password" class="form-input" required> 
+ 
+        <label for="confirm_password">Confirmar password:</label> 
+        <input type="password" name="confirm_password" placeholder="Confirmar Password" class="form-input" required> 
+ 
+        <div class="form-actions"> 
+          <button type="submit" class="btn-secundario">Atualizar password</button> 
+        </div> 
+      </form> 
+ 
+      <!-- Atualizar Dados Pessoais --> 
+      <form method="post" action="."> 
+        {% csrf_token %} 
+        <input type="hidden" name="form_action" value="dados_pessoais"> 
+        <h3>Informações pessoais</h3> 
+        <label for="data_nascimento">Data de nascimento:</label> 
+        <input type="date" name="data_nascimento" class="form-input" value="{{ user.data_nascimento|date:'Y-m-d' }}"> 
+ 
+        <label for="pais">País/Região:</label> 
+        <input type="text" name="pais" placeholder="País/Região" value="{{ user.pais }}" class="form-input"> 
+ 
+        <label for="idioma">Idioma:</label> 
+        <input type="text" name="idioma" placeholder="Idioma" value="{{ user.idioma }}" class="form-input"> 
+ 
+        <div class="form-actions"> 
+          <button type="submit" class="btn-guardar">Guardar</button> 
+        </div> 
+      </form> 
+    </div> 
+  </div> 
+</div> 
+ 
+<script> 
+  const fotoInput = document.getElementById('foto'); 
+  const previewImg = document.getElementById('preview-img'); 
+ 
+  fotoInput.addEventListener('change', function () { 
+    const file = this.files[0]; 
+    if (file && file.type.startsWith('image/')) { 
+      const reader = new FileReader(); 
+ 
+      reader.onload = function (e) { 
+        previewImg.src = e.target.result; 
+      }; 
+ 
+      reader.readAsDataURL(file); 
+    } 
+  }); 
+</script> 
+<script> 
+  const tabButtons = document.querySelectorAll(".tab-btn"); 
+  const tabSections = document.querySelectorAll(".tab-section"); 
+ 
+  tabButtons.forEach(btn => { 
+    btn.addEventListener("click", () => { 
+      const target = btn.dataset.tab; 
+ 
+      // Ativa o botão clicado 
+      tabButtons.forEach(b => b.classList.remove("active")); 
+      btn.classList.add("active"); 
+ 
+      // Mostra a secção correspondente 
+      tabSections.forEach(sec => { 
+        sec.classList.remove("active"); 
+        if (sec.id === `tab-${target}`) { 
+          sec.classList.add("active"); 
+        } 
+      }); 
+    }); 
+  }); 
+</script> 
+<script> 
+  setTimeout(() => { 
+    document.querySelectorAll('.messages li').forEach(el => { 
+      el.style.opacity = '0'; 
+      setTimeout(() => el.remove(), 500); // remover após fade 
+    }); 
+  }, 3000); // 3 segundos 
+</script> 
+<script> 
+  window.addEventListener('load', () => { 
+    const hash = window.location.hash; 
+    if (hash === '#gestao') { 
+      document.querySelector('.tab-btn[data-tab="gestao"]').click(); 
+    } 
+  }); 
+</script> 
+ 
+ 
+{% endblock %}

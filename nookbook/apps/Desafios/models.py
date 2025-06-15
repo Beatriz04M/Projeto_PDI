@@ -6,20 +6,21 @@ from django.utils.timezone import now
 
 class DesafioLeitura(models.Model):  
     participantes = models.ManyToManyField('Utilizadores.Utilizador', blank=True, related_name='desafios')
-    titulo = models.CharField(max_length=255)
+    titulo = models.CharField(max_length=255, unique=True)
     descricao = models.TextField()    
     data_inicio = models.DateField(auto_now_add=True)
     data_fim = models.DateField()
-    meta = models.PositiveIntegerField(default=1)  # Meta de livros a serem lidos
+    meta = models.PositiveIntegerField(default=1)  
 
     class Meta:
-        ordering = ['-data_inicio']  # Ordena desafios do mais recente para o mais antigo
+        ordering = ['-data_inicio']  
 
     def clean(self):
-        if self.data_inicio > self.data_fim:
-            raise ValidationError("A data de início não pode ser posterior à data de fim.")
+        if self.data_fim and self.data_inicio:
+            if self.data_inicio > self.data_fim:
+                raise ValidationError("A data de início não pode ser posterior à data de fim.")
 
-        if self.data_fim < now().date():
+        if self.data_fim and self.data_fim < now().date():
             raise ValidationError("A data de fim não pode estar no passado.")
 
     def __str__(self):

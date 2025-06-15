@@ -1,0 +1,115 @@
+/* Roda */
+.roda-container {
+  max-width: 600px;
+  margin: 4rem auto;
+  padding: 2.5rem;
+  background-color: #fffdf5;
+  border-radius: 18px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+}
+
+.roda-container h2 {
+  font-size: 2.2rem;
+  margin-bottom: 0.6rem;
+  color: #444;
+}
+
+.roda-container .explicacao {
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  color: #777;
+}
+
+/* === RODA === */
+.roda-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+canvas#wheelCanvas {
+  border-radius: 50%;
+  border: 4px solid #eed9a4;
+  background-color: #fff;
+  box-shadow: 0 4px 12px #0000000d;
+}
+
+/* === BOTÃO GIRAR === */
+.btn-girar {
+  background-color: #d48ada;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.6rem;
+  font-size: 1.1rem;
+  border-radius: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-girar:hover {
+  background-color: #b867bc;
+  transform: scale(1.03);
+}
+
+.btn {
+  display: inline-block;
+  background-color: #ecd9a2;
+  padding: 0.7rem 1.4rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  color: #111;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #d6b95c;
+  color: #000;
+}
+
+/* === RESPONSIVO === */
+@media (max-width: 768px) {
+  .roda-container {
+    padding: 1.5rem;
+    margin: 4rem 4rem 4rem 6rem;
+  }
+    
+
+  canvas#wheelCanvas {
+    width: 60%;
+    height: auto;
+  }
+
+  .btn-girar {
+    font-size: 1rem;
+    padding: 0.7rem 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .roda-container {
+    padding: 1.5rem;
+    margin: 4rem 2rem 4rem 2.5rem;
+  }
+
+  .roda-container h2 {
+    font-size: 1.5rem;
+  }
+
+  canvas#wheelCanvas {
+    width: 90%;
+    height: auto;
+  }
+
+  .btn-girar {
+    font-size: 1rem;
+    padding: 0.7rem 1.2rem;
+  }
+}

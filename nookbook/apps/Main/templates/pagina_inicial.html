@@ -2,14 +2,13 @@
 {% load static %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/styles.css' %}">
 <link rel="stylesheet" href="{% static 'Main/css/main.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="pagina-leitura">
 
-  <!-- ✅ Mensagens flutuantes -->
+  <!-- Mensagens flutuantes -->
   {% if messages %}
     <div class="mensagens-flutuante">
       {% for message in messages %}
@@ -27,14 +26,23 @@
         {% for livro in em_leitura %}
           <div class="livro-slide" data-id="{{ livro.id }}" data-capa="{{ livro.capa }}" data-progresso-id="{{ livro.progresso_id }}">
             <div class="livro-card-carousel">
-              <img src="{{ livro.capa }}" alt="Capa de {{ livro.titulo }}">
+              <a href="{% url 'detalhes_livro' livro.id %}?voltar_para={{ request.path }}">
+                <img src="{{ livro.capa }}" alt="Capa de {{ livro.titulo }}">
+              </a>
+
               <div class="info">
-                <h3 class="titulo-limitado">{{ livro.titulo }}</h3>
-                <p>{{ livro.autor }}</p>
+                <a href="{% url 'detalhes_livro' livro.id %}?voltar_para={{ request.path }}" style="text-decoration: none; color: inherit;">
+                  <h3 class="titulo-limitado">{{ livro.titulo }}</h3>
+                  <p>{{ livro.autor }}</p>
+                </a>
                 <div class="progress-container">
                   <div class="progress-bar" data-percentagem="{{ livro.percentagem|floatformat:0 }}"></div>
                 </div>
                 <p>{{ livro.pag_atual }} de {{ livro.pag_total }} páginas – {{ livro.percentagem }}%</p>
+
+                {% if livro.leitura_id %}
+                  <a href="{% url 'leitura_detalhes' livro.leitura_id %}" class="btn-ver-detalhes">Ver histórico</a>
+                {% endif %}
               </div>
             </div>
           </div>
@@ -47,7 +55,6 @@
     {% endif %}
   {%endif %}
 
-    <!-- === FORMULÁRIO "LEU HOJE?" === -->
     <div class="leitura-box">
       <div class="leitura-conteudo">
         <p>Leu hoje?</p>
@@ -64,8 +71,8 @@
         <form method="POST" action="{% url 'registar_leitura' %}" class="leitura-form" id="leitura-form">
           {% csrf_token %}
           <input type="hidden" name="progresso_id" id="progresso-id">
-          <input type="number" name="paginas" placeholder="Ex: 15" min="1" required>
-          <button type="submit">Eu li hoje</button>
+          <input type="number" name="paginas" placeholder="Nº de páginas lidas hoje" min="1" required>
+          <button type="submit">Registar leitura</button>
         </form>
       </div>
       
@@ -86,35 +93,25 @@
         <div class="recomendados-grid">
           {% for livro in livros_recomendados %}
             <div class="livro-card-recomendado">
-              {% if livro.capa %}
+              {% if livro.id %}
+                <!-- Livro da base de dados -->
                 <a href="{% url 'detalhes_livro' livro.id %}">
-                  <img src="{{ livro.capa.url }}" alt="Capa de {{ livro.titulo }}">
+                  {% if livro.capa %}
+                    <img src="{{ livro.capa.url }}" alt="Capa de {{ livro.titulo }}">
+                  {% else %}
+                    <img src="{% static 'img/capa_placeholder.jpg' %}" alt="Sem capa">
+                  {% endif %}
                 </a>
               {% else %}
-                <img src="{% static 'img/capa_placeholder.jpg' %}" alt="Sem capa">
+                <!-- Livro vindo da API -->
+                <a href="{% url 'detalhe_livro_api' livro.google_id %}?voltar_para={{ request.path }}">
+                  <img src="{{ livro.capa }}" alt="Capa de {{ livro.titulo }}">
+                </a>
               {% endif %}
 
               <div class="livro-info">
                 <h3>{{ livro.titulo }}</h3>
                 <p>{{ livro.autor }}</p>
-                {% with livro.media_avaliacoes|floatformat:0|add:"0" as estrelas %}
-                  <div class="estrelas">
-                    {% for i in "12345"|make_list %}
-                      {% if estrelas|add:"-1" >= forloop.counter0 %}
-                        ★
-                      {% else %}
-                        ☆
-                      {% endif %}
-                    {% endfor %}
-                  </div>
-                {% endwith %}
-                {% if estante_a_ler %}
-                  <form method="POST" action="{% url 'adicionar_livro_estante' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="livro_id" value="{{ livro.id }}">
-                    <input type="hidden" name="estante_id" value="{{ estante_a_ler.id }}">
-                  </form>
-                {% endif %}
               </div>
             </div>
           {% endfor %}

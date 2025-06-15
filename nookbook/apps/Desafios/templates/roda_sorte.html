@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/roda.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="roda-container">
+  <h2>🎡 Roda da Sorte</h2>
+  <p class="explicacao">A sorte escolherá um livro da tua estante <strong>"Quero Ler"</strong>.</p>
+
+  {% if livros %}
+    <div class="roda-wrapper">
+      <div class="palheta"></div>
+      <canvas id="wheelCanvas" width="400" height="400"></canvas>
+      <button class="btn-girar" onclick="girarRoda()">🎯 Girar</button>
+      <p id="resultadoLivro" class="resultado"></p>
+    </div>
+  {% else %}
+    <p>Não tens livros na estante "Quero Ler".</p>
+  {% endif %}
+
+  <a href="{% url 'perfil' %}" class="btn">Voltar ao perfil</a>
+</div>
+{{ livros|json_script:"livrosData" }}
+<script src="{% static 'js/roda.js' %}"></script>
+{% endblock %}

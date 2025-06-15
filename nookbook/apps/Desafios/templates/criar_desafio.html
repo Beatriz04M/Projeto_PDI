@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/desafios.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+  <h2>Criar Novo Desafio</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Criar</button>
+  </form>
+  <a href="{% url 'perfil' %}" class="btn">Voltar</a>
+</div>
+{% endblock %}

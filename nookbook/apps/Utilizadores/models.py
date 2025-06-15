@@ -44,7 +44,7 @@ class Utilizador(AbstractUser):
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
-    EMAIL_FIELD = "email"  # <- esta linha que deves adicionar!
+    EMAIL_FIELD = "email"  
 
     objects = UtilizadorManager()
 
