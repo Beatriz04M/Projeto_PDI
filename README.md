@@ -1,6 +1,8 @@
 # NookBook - *Your perfect nook for every book!*
 
-![Logótipo NookBook](nookbook/static/imagens/logo2.png)
+<p align="center">
+  <img src="nookbook/static/imagens/logo.png" alt="Logótipo NookBook" width="300"/>
+</p>
 
 **Bem-vindo(a) ao repositório oficial do NookBook!**  
 Este projeto foi desenvolvido no âmbito da unidade curricular de **Projeto e Desenvolvimento Informático**, inserida na **Licenciatura em Informática de Gestão** da **Coimbra Business School | ISCAC**.
