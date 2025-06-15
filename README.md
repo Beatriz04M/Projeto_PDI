@@ -6,7 +6,7 @@
 
 *👋 Bem-vindo(a) ao repositório oficial do NookBook!*  
 Este projeto foi desenvolvido no âmbito da unidade curricular de *Projeto e Desenvolvimento Informático, inserida na **Licenciatura em Informática de Gestão* da *Coimbra Business School | ISCAC*.
-O NookBook é uma plataforma digital concebida para apaixonados por leitura que desejam organizar, acompanhar e enriquecer a sua experiência literária — tudo num ambiente interativo, gamificado e visualmente apelativo.
+O NookBook é um website concebido para apaixonados por leitura que desejam organizar, acompanhar e enriquecer a sua experiência literária — tudo num ambiente interativo, gamificado e visualmente apelativo.
 
 ## 📖 Sobre o NookBook
 
@@ -47,9 +47,10 @@ Criar um website funcional e visualmente apelativo que:
 
 ## 🛡 Acesso à Base de Dados
 
-Para aceder à base de dados devem ser utilizadas as seguintes credenciais:
-Email: nookbook.project@gmail.com  
-Password: nook2025dev!
+Para aceder ao painel de admin do Django, utilize o seguinte endereço:
+http://127.0.0.1:8000/admin/
+
+As credenciais são:
 | Email:      | admin@gamil.com   | 
 | Password:   | admin123          |
 

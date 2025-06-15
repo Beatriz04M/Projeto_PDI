@@ -10,6 +10,7 @@ from django.db.models import Q, Avg
 from datetime import date
 from django.core.files.base import ContentFile
 from decimal import Decimal
+from django.urls import reverse
 
 # Página Inicial do site
 def pagina_inicial(request):
@@ -74,6 +75,11 @@ def pesquisar_livros(request):
     livros_api = []
     livros_bd = []
 
+    # Guardar a página onde o utilizador estava ANTES de pesquisar
+    referer = request.META.get('HTTP_REFERER')
+    if referer and '/pesquisar' not in referer:
+        request.session['origem_pesquisa'] = referer  
+
     def identificar_filtro(texto):
         isbn_limpo = texto.replace('-', '').replace(' ', '')
         if re.fullmatch(r'\d{10}|\d{13}', isbn_limpo):
@@ -106,11 +112,16 @@ def pesquisar_livros(request):
                 titulo = livro.get('titulo', '').lower()
                 if titulo and titulo not in titulos_bd:
                     livros_api.append(livro)
+    
+    referer = request.META.get('HTTP_REFERER', '')
+    if 'q' in request.GET and 'resultados' not in referer:
+        request.session['ultima_pesquisa'] = request.get_full_path()
 
     return render(request, "resultados.html", {
         "query": query,
         "livros_bd": livros_bd,
-        "livros_api": livros_api
+        "livros_api": livros_api,
+        "origem_pesquisa": request.session.get('origem_pesquisa')  
     })
 
 
@@ -237,12 +248,21 @@ def detalhe_livro_api(request, google_id):
     avaliacoes_api = AvaliacaoAPI.objects.filter(google_id=google_id).order_by("-data")
     media_api = avaliacoes_api.aggregate(media=Avg('avaliacao'))['media'] or 0
 
+    voltar_para = request.GET.get('voltar_para')
+    referer = request.META.get('HTTP_REFERER', '')
+
+    if not voltar_para and 'pesquisa' in referer:
+        voltar_para = referer
+        request.session['ultima_pesquisa'] = referer
+
+
     return render(request, "detalhe_livro.html", {
         "livro": livro,
         "avaliacoes_api": avaliacoes_api,
         "media_api": media_api,
         "avaliacoes_bd": None,
-        "estantes": estantes
+        "estantes": estantes,
+        "voltar_para": voltar_para
     })
 
 
@@ -255,11 +275,20 @@ def detalhe_livro(request, livro_id):
     if request.user.is_authenticated:
         estantes = Estante.objects.filter(utilizador=request.user)
 
+    voltar_para = request.GET.get('voltar_para')
+    referer = request.META.get('HTTP_REFERER', '')
+
+    if not voltar_para and 'pesquisa' in referer:
+        voltar_para = referer
+        request.session['ultima_pesquisa'] = referer
+
+
     return render(request, "detalhe_livro.html", {
         "livro": livro,
         "avaliacoes_api": None,
         "avaliacoes_bd": avaliacoes_bd,
-        "estantes": estantes
+        "estantes": estantes,
+        "voltar_para": voltar_para
     })
 
 
@@ -294,7 +323,7 @@ def adicionar_comentario(request, livro_id):
         else:
             messages.error(request, "Preenche todos os campos corretamente.")
 
-    return redirect('detalhe_livro', livro_id=livro.id)
+    return redirect(f"{reverse('detalhe_livro', args=[livro.id])}?voltar_para={request.GET.get('voltar_para','')}")
 
 @login_required
 def comentar_api(request, google_id):
@@ -323,7 +352,7 @@ def comentar_api(request, google_id):
         else:
             messages.error(request, "Preenche todos os campos corretamente.")
 
-        return redirect("detalhe_livro_api", google_id=google_id)
+        return redirect(f"{reverse('detalhe_livro_api', args=[google_id])}?voltar_para={request.GET.get('voltar_para','')}")
      
 @login_required
 def editar_avaliacao(request, avaliacao_id):

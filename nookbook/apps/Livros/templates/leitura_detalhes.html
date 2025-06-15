@@ -4,47 +4,41 @@
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'Livros/css/leituras.css' %}">
 {% endblock %}
+
 {% block content %}
-<h2>Detalhes da Leitura: {{ leitura.livro.titulo }}</h2>
+<h2>
+  <a href="{% url 'inicio' %}" class="voltar-seta">
+    <i class="bi bi-chevron-left"></i> Detalhes da Leitura: {{ leitura.livro.titulo }}
+  </a>
+</h2>
 
-<div class="tabs">
-  <button class="tab" data-tab="anotacoes">Anotações</button>
-  <button class="tab" data-tab="historico">Histórico</button>
+<div class="dashboard-container">
+  <!-- Coluna: Anotações -->
+  <div class="dashboard-col">
+    <div class="dashboard-section">
+      <h3>Anotações</h3>
+      <form method="POST" action="{% url 'adicionar_anotacao' leitura.id %}">
+        {% csrf_token %}
+        <textarea name="anotacoes" rows="5" cols="40" placeholder="Escreve aqui as tuas anotações...">{{ leitura.anotacoes|default_if_none:'' }}</textarea>
+        <button type="submit">Guardar Anotação</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Coluna: Histórico -->
+  <div class="dashboard-col">
+    <div class="dashboard-section">
+      <h3>Histórico</h3>
+      <p><strong>Início:</strong> {{ leitura.data_inicio|default:"(ainda não iniciado)" }}</p>
+      <p><strong>Fim:</strong> {{ leitura.data_fim|default:"(ainda a decorrer)" }}</p>
+      <ul>
+        {% for registo in historico %}
+          <li>{{ registo.data }} — {{ registo.paginas_lidas }} páginas</li>
+        {% empty %}
+          <li>Sem registos ainda.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
 </div>
-
-<div class="tab-content" id="anotacoes">
-  <form method="POST" action="{% url 'adicionar_anotacao' leitura.id %}">
-    {% csrf_token %}
-    <textarea name="anotacoes" rows="5" cols="40" placeholder="Escreve aqui as tuas anotações...">{{ leitura.anotacoes|default_if_none:'' }}</textarea>
-    <button type="submit">Guardar Anotação</button>
-  </form>
-</div>
-
-<div class="tab-content" id="historico">
-  <p><strong>Início:</strong> {{ leitura.data_inicio|default:"(ainda não iniciado)" }}</p>
-  <p><strong>Fim:</strong> {{ leitura.data_fim|default:"(ainda a decorrer)" }}</p>
-
-  <ul>
-    {% for registo in historico %}
-      <li>{{ registo.data }} — {{ registo.paginas_lidas }} páginas</li>
-    {% empty %}
-      <li>Sem registos ainda.</li>
-    {% endfor %}
-  </ul>
-</div>
-
-<script>
-  const tabs = document.querySelectorAll(".tab");
-  const contents = document.querySelectorAll(".tab-content");
-
-  tabs.forEach(tab => {
-    tab.addEventListener("click", () => {
-      tabs.forEach(t => t.classList.remove("active"));
-      contents.forEach(c => c.classList.remove("active"));
-
-      tab.classList.add("active");
-      document.getElementById(tab.dataset.tab).classList.add("active");
-    });
-  });
-</script>
-{% endblock %}
+{% endblock %}

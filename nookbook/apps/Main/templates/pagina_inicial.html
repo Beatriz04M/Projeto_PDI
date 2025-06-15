@@ -95,7 +95,7 @@
             <div class="livro-card-recomendado">
               {% if livro.id %}
                 <!-- Livro da base de dados -->
-                <a href="{% url 'detalhes_livro' livro.id %}">
+                <a href="{% url 'detalhes_livro' livro.id %}?voltar_para={{ request.path }}">
                   {% if livro.capa %}
                     <img src="{{ livro.capa.url }}" alt="Capa de {{ livro.titulo }}">
                   {% else %}

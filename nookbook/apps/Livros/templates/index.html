@@ -57,7 +57,7 @@
     <div class="floating-books">
       {% for livro in livros_esquerda|slice:":6" %}
         {% if livro and livro.google_id and livro.capa %}
-          <a href="{% url 'detalhe_livro_api' livro.google_id %}">
+          <a href="{% url 'detalhe_livro_api' livro.google_id %}?voltar_para={{ request.path }}">
             <img src="{{ livro.capa }}" class="float-book left
               {% if forloop.counter0 == 0 %}top{% elif forloop.counter0 == 1 %}mid
               {% elif forloop.counter0 == 2 %}top1{% elif forloop.counter0 == 3 %}mid1

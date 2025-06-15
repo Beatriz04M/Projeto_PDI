@@ -27,7 +27,7 @@
         <button type="submit" class="btn-remover" title="Remover">×</button>
       </form>
 
-      <a href="{% url 'detalhes_livro' livro.id %}">
+      <a href="{% url 'detalhe_livro' livro.id %}?voltar_para={{ request.path }}">
         {% if livro.capa %}
           <img src="{{ livro.capa.url }}" alt="Capa de {{ livro.titulo }}" class="capa">
         {% else %}

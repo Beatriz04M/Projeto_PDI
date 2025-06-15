@@ -1,45 +1,3 @@
-/* Tabs */
-.tabs {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.tab {
-  background-color: #fcb6c4;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  color: #000;
-  transition: background-color 0.2s;
-}
-
-.tab:hover {
-  background-color: #f998b4;
-}
-
-.tab.active {
-  background-color: #f57b9c;
-  color: #fff;
-}
-
-/* Tab content sections */
-.tab-content {
-  display: none;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
-}
-
-.tab-content.active {
-  display: block;
-}
-
 /* Forms */
 .form-registar {
   display: flex;
@@ -57,7 +15,9 @@ textarea {
   max-width: 400px;
 }
 
-button {
+/* Isolamento dos botões */
+.form-registar button,
+.dashboard-section button {
   background-color: #fcb6c4;
   color: #000;
   font-weight: bold;
@@ -69,7 +29,8 @@ button {
   align-self: flex-start;
 }
 
-button:hover {
+.form-registar button:hover,
+.dashboard-section button:hover {
   background-color: #f998b4;
 }
 
@@ -89,4 +50,185 @@ button:hover {
 #historico p {
   font-size: 15px;
   margin: 8px 0;
+}
+
+/* Dashboard Layout */
+.dashboard-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.dashboard-col {
+  flex: 1 1 45%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Sections */
+.dashboard-section {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-section h3 {
+  margin-top: 0;
+  color: #e25d7b;
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .dashboard-col {
+    flex: 1 1 100%;
+  }
+}
+
+/* Link estilo título com seta de voltar */
+.voltar-seta {
+  text-decoration: none;
+  color: #000;
+  font-size: 24px;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.voltar-seta:hover {
+  color: #f998b4;
+}
+
+.voltar-seta i {
+  margin-right: 8px;
+}
+
+/* TELAS MÉDIAS: tablets (≤768px) */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 0 20px;
+  }
+
+  .dashboard-col {
+    flex: 1 1 100%;
+  }
+
+  .dashboard-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .form-registar button,
+  .dashboard-section button {
+    align-self: flex-end;
+    margin-left: 0;
+  }
+
+  textarea {
+    max-width: 100%;
+  }
+
+  h2, .dashboard-section {
+    margin-left: 10px;
+  }
+}
+
+/* TELAS PEQUENAS: telemóveis (≤480px) */
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 0 10px;
+  }
+
+  .dashboard-section form {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .form-registar button,
+  .dashboard-section button {
+    width: 100%;
+    align-self: stretch;
+  }
+
+  h2, .dashboard-section {
+    margin-left: 6px;
+  }
+
+  textarea {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Geral: garante que tudo respeita os limites do container */
+* {
+  box-sizing: border-box;
+}
+
+/* Garantir espaçamento lateral no título */
+h2 {
+  padding-left: 10px;
+}
+
+/* Melhorar alinhamento do cabeçalho em ecrãs pequenos */
+@media (max-width: 768px) {
+  h2 {
+    font-size: 20px;
+    padding-left: 14px;
+    padding-right: 14px;
+    word-break: break-word;
+  }
+
+  .voltar-seta {
+    display: flex;
+    align-items: center;
+  }
+
+  .dashboard-container {
+    padding: 0 14px;
+  }
+
+  textarea {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+  }
+
+  .form-registar button,
+  .dashboard-section button {
+    margin-top: 5px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* Ecrãs menores ainda */
+@media (max-width: 480px) {
+  h2 {
+    font-size: 18px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .dashboard-section {
+    margin-left: 6px;
+    margin-right: 6px;
+  }
+
+  textarea {
+    font-size: 15px;
+    padding: 10px;
+    resize: vertical;
+  }
+}
+
+.leitura-detalhes-page button {
+  /* Só aplica nesta página */
+  margin: initial;
+  display: inline-block;
 }

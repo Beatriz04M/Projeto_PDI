@@ -104,6 +104,20 @@
     transition: all 0.3s ease;
   }
 
+  .voltar-inicio {
+  color: #000; /* preto */
+  text-decoration: none; 
+  font-weight: normal;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s ease;
+}
+
+.voltar-inicio:hover {
+  color: #e26b8c; 
+}
+
   @media (max-width: 768px) {
     .livros-container {
       margin-left: 3.5rem;

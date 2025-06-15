@@ -16,7 +16,9 @@
   {% endif %}
 
 
-<a href="javascript:history.back()" class="btn-voltar"> <i class="bi bi-chevron-left"></i> Voltar </a>
+<a href="{% if voltar_para %}{{ voltar_para }}{% else %}{{ request.session.ultima_pesquisa|default:'/' }}{% endif %}" class="btn-voltar">
+  <i class="bi bi-chevron-left">Voltar</i>
+</a>
 <div class="detalhes-livro-container">
   <div class="livro-topo">
     <div class="capa-box">

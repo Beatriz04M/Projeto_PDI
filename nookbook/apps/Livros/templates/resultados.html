@@ -8,7 +8,11 @@
 
 {% block content %}
 <div class="linha-topo">
-  <h2>Resultados para "{{ query }}"</h2>
+  <h2>
+    <a href="{% url 'inicio' %}" class="voltar-inicio">
+      <i class="bi bi-chevron-left"></i> <strong>Resultados para "{{ query }}"</strong>
+    </a>
+  </h2>
 </div>
 
 
@@ -17,7 +21,7 @@
 
     {# Livros da Base de Dados #}
     {% for livro in livros_bd %}
-      <a href="{% url 'detalhe_livro' livro.id %}" class="livro-link">
+      <a href="{% url 'detalhe_livro' livro.id %}?voltar_para={{ request.path }}" class="livro-link">
         <div class="livro-card">
           <img src="{% if livro.capa %}{{ livro.capa.url }}{% else %}{% static 'imagens/capa_default.png' %}{% endif %}" alt="Capa do livro">
           <div class="livro-titulo">{{ livro.titulo }}</div>
@@ -36,7 +40,7 @@
 
     {# Livros da API #}
     {% for livro in livros_api %}
-      <a href="{% url 'detalhe_livro_api' livro.google_id %}" class="livro-link">
+      <a href="{% url 'detalhe_livro_api' livro.google_id %}?voltar_para={{ request.path }}" class="livro-link">
         <div class="livro-card">
           <img src="{% if livro.capa %}{{ livro.capa }}{% else %}{% static 'imagens/capa_default.png' %}{% endif %}" alt="Capa do livro">
           <div class="livro-titulo">{{ livro.titulo|default:"Título Desconhecido" }}</div>

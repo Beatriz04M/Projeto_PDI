@@ -383,6 +383,21 @@ input[type="number"][name="avaliacao"]::placeholder {
   color: red;
 }
 
+.btn-voltar {
+  display: inline-block;
+  background-color: #f8d7da; 
+  color: #333;
+  padding: 8px 16px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: bold;
+  margin: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-voltar:hover {
+  background-color: #f5c6cb;
+}
 
 /* 📱 Responsividade               */
 @media screen and (max-width: 768px) {
