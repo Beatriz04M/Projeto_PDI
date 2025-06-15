@@ -52,6 +52,7 @@ http://127.0.0.1:8000/admin/
 
 As credenciais são:
 | Email:      | admin@gamil.com   | 
+|-------------|-------------------|
 | Password:   | admin123          |
 
 ## 👩‍💻 Autoras
